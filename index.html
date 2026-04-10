@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>baui</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #3b3b3b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .logo {
+      color: #c62828;
+      font-size: 88px;
+      font-weight: 900;
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+    }
+
+    .search {
+      width: 100%;
+      height: 78px;
+      border: none;
+      outline: none;
+      border-radius: 18px;
+      background: #4a4a4a;
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+      padding: 0 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .search::placeholder {
+      color: #cfcfcf;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="logo">baui</div>
+    <input class="search" type="text" placeholder="Adresse eingeben" />
+  </div>
+</body>
+</html>
