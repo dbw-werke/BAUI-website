@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>baui</title>
+  <title>B</title>
   <style>
     * {
       margin: 0;
@@ -13,51 +13,48 @@
     }
 
     body {
-      min-height: 100vh;
       background: #3b3b3b;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start; /* OBEN statt Mitte */
     }
 
     .wrapper {
       width: 100%;
       max-width: 1000px;
-      padding: 20px;
+      padding-top: 80px; /* Abstand nach oben */
       text-align: center;
     }
 
     .logo {
       color: #c62828;
-      font-size: 88px;
+      font-size: 120px;
       font-weight: 900;
       margin-bottom: 30px;
-      letter-spacing: 2px;
     }
 
     .search {
       width: 100%;
-      height: 78px;
+      height: 80px;
       border: none;
-      outline: none;
       border-radius: 18px;
       background: #4a4a4a;
       color: white;
       font-size: 24px;
-      font-weight: 700;
-      padding: 0 28px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      font-weight: bold;
+      padding: 0 30px;
+      outline: none;
     }
 
     .search::placeholder {
       color: #cfcfcf;
-      font-weight: 700;
     }
   </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="logo">baui</div>
+    <div class="logo">B</div>
     <input class="search" type="text" placeholder="Adresse eingeben" />
   </div>
 </body>
