@@ -137,7 +137,7 @@
           document.getElementById("status").innerText = "Adresse nicht gefunden";
           return;
         }
-
+console.log(res[0].formatted_address);
         const loc = res[0].geometry.location;
 
         map.setCenter(loc);
