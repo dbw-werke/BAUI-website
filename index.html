@@ -146,11 +146,11 @@
         clearMarkers();
         addMarker(loc, "Dein Standort");
 
-        const request = {
-          location: loc,
-          radius: 5000,
-          keyword: "Baumarkt OR OBI OR Hornbach OR Bauhaus"
-        };
+       const request = {
+  location: loc,
+  rankBy: google.maps.places.RankBy.DISTANCE,
+  keyword: "Baumarkt"
+};
 
         service.nearbySearch(request, (results, status) => {
           if (status !== google.maps.places.PlacesServiceStatus.OK) {
