@@ -116,14 +116,30 @@
     function addMarker(pos, title) {
       const marker = new google.maps.Marker({
         position: pos,
-        map,
-        title
+        map: map,
+        title: title
       });
       markers.push(marker);
     }
 
+    function getDistance(a, b) {
+      const R = 6371;
+      const dLat = (b.lat() - a.lat()) * Math.PI / 180;
+      const dLng = (b.lng() - a.lng()) * Math.PI / 180;
+
+      const lat1 = a.lat() * Math.PI / 180;
+      const lat2 = b.lat() * Math.PI / 180;
+
+      const x =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(lat1) * Math.cos(lat2);
+
+      const d = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+      return R * d;
+    }
+
     function search() {
-      const location = document.getElementById("locationInput").value;
+      const location = document.getElementById("locationInput").value.trim();
 
       if (!location) {
         alert("Adresse eingeben");
@@ -131,83 +147,60 @@
       }
 
       document.getElementById("status").innerText = "Suche...";
+      document.getElementById("results").innerHTML = "";
+      clearMarkers();
 
       geocoder.geocode({ address: location }, (res, status) => {
-        if (status !== "OK") {
+        if (status !== "OK" || !res[0]) {
           document.getElementById("status").innerText = "Adresse nicht gefunden";
           return;
         }
-console.log(res[0].formatted_address);
+
+        console.log(res[0].formatted_address);
+
         const loc = res[0].geometry.location;
 
         map.setCenter(loc);
         map.setZoom(13);
 
-        clearMarkers();
         addMarker(loc, "Dein Standort");
 
-       const request = {
-  location: loc,
-  rankBy: google.maps.places.RankBy.DISTANCE,
-  keyword: "Baumarkt"
-};
+        const request = {
+          location: loc,
+          rankBy: google.maps.places.RankBy.DISTANCE,
+          keyword: "Baumarkt"
+        };
 
         service.nearbySearch(request, (results, status) => {
-          if (status !== google.maps.places.PlacesServiceStatus.OK) {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
             document.getElementById("status").innerText = "Keine Ergebnisse";
             return;
           }
 
+          const sorted = results
+            .filter(place => place.geometry && place.geometry.location)
+            .map(place => ({
+              ...place,
+              distance: getDistance(loc, place.geometry.location)
+            }))
+            .sort((a, b) => a.distance - b.distance);
+
           const list = document.getElementById("results");
           list.innerHTML = "";
 
-         // Entfernung berechnen
-function getDistance(a, b) {
-  const R = 6371;
-  const dLat = (b.lat() - a.lat()) * Math.PI / 180;
-  const dLng = (b.lng() - a.lng()) * Math.PI / 180;
+          sorted.forEach((place, i) => {
+            addMarker(place.geometry.location, place.name);
 
-  const lat1 = a.lat() * Math.PI / 180;
-  const lat2 = b.lat() * Math.PI / 180;
+            const div = document.createElement("div");
+            div.className = "result-card";
+            div.innerHTML = `
+              <b>${i + 1}. ${place.name}</b><br>
+              ${place.vicinity || "Adresse nicht verfügbar"}<br>
+              Entfernung: ${place.distance.toFixed(2)} km
+            `;
 
-  const x = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.sin(dLng/2) * Math.sin(dLng/2) *
-            Math.cos(lat1) * Math.cos(lat2);
-
-  const d = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-
-  return R * d;
-}
-
-// Entfernung hinzufügen
-const sorted = results.map(place => {
-  return {
-    ...place,
-    distance: getDistance(loc, place.geometry.location)
-  };
-});
-
-// Sortieren
-sorted.sort((a, b) => a.distance - b.distance);
-
-// Anzeigen
-const list = document.getElementById("results");
-list.innerHTML = "";
-
-sorted.forEach((place, i) => {
-  addMarker(place.geometry.location, place.name);
-
-  const div = document.createElement("div");
-  div.className = "result-card";
-
-  div.innerHTML = `
-    <b>${i+1}. ${place.name}</b><br>
-    ${place.vicinity}<br>
-    Entfernung: ${place.distance.toFixed(2)} km
-  `;
-
-  list.appendChild(div);
-});
+            list.appendChild(div);
+          });
 
           document.getElementById("status").innerText = "Baumärkte gefunden";
         });
@@ -217,12 +210,10 @@ sorted.forEach((place, i) => {
     window.initMap = initMap;
   </script>
 
-  <!-- 🔥 HIER DEIN API KEY EINSETZEN -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7RCu62ICAEdQkKOPdmueVaqpW6BFhM-M&libraries=places&callback=initMap"
     async
     defer
   ></script>
-
 </body>
 </html>
