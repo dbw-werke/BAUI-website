@@ -3,120 +3,187 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Baui.de</title>
+  <title>Baumarkt Finder</title>
+
   <style>
-    * {
+    body {
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      background: #3b3b3b;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start; /* OBEN statt Mitte */
+      background: #f5f5f5;
     }
 
     .wrapper {
-      width: 100%;
-      max-width: 1000px;
-      padding-top: 80px; /* Abstand nach oben */
-      text-align: center;
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
 
-    .logo {
-      color: #c62828;
-      font-size: 120px;
-      font-weight: 900;
-      margin-bottom: 30px;
+    h1 {
+      margin-top: 0;
     }
 
-    .search {
-      width: 100%;
-      height: 80px;
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 14px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 14px;
+      font-size: 16px;
       border: none;
-      border-radius: 18px;
-      background: #4a4a4a;
+      border-radius: 8px;
+      cursor: pointer;
+      background: black;
       color: white;
-      font-size: 24px;
-      font-weight: bold;
-      padding: 0 30px;
-      outline: none;
     }
-.search-group {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-bottom: 22px;
-}
 
-.search-box {
-  width: 100%;
-  height: 78px;
-  border-radius: 18px;
-  background: #4a4a4a;
-  display: flex;
-  align-items: center;
-  padding: 0 22px;
-}
-
-.search-input {
-  flex: 1;
-  height: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.search-input::placeholder {
-  color: #cfcfcf;
-}
-
-.icon {
-  font-size: 26px;
-  margin-left: 12px;
-}
-
-.search-button {
-  width: 100%;
-  height: 70px;
-  border: none;
-  border-radius: 18px;
-  background: #2e7d32;
-  color: white;
-  font-size: 26px;
-  font-weight: bold;
-  cursor: pointer;
-}
-    .search::placeholder {
-      color: #cfcfcf;
+    #status {
+      margin-top: 16px;
     }
-    
+
+    #results {
+      margin-top: 20px;
+    }
+
+    .result-card {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    #map {
+      width: 100%;
+      height: 400px;
+      margin-top: 20px;
+    }
   </style>
 </head>
+
 <body>
-<div class="wrapper">
-  <div class="logo">B</div>
+  <div class="wrapper">
+    <h1>Baumarkt Finder</h1>
 
-  <div class="search-group">
-    <div class="search-box">
-      <input class="search-input" type="text" placeholder="Adresse" />
-      <span class="icon">📍</span>
+    <div class="form-group">
+      <input id="locationInput" placeholder="Adresse eingeben..." />
+      <input id="materialInput" placeholder="Material eingeben..." />
+      <button id="searchButton">Suchen</button>
     </div>
 
-    <div class="search-box">
-      <input class="search-input" type="text" placeholder="Produkt" />
-      <span class="icon">🔧</span>
-    </div>
+    <div id="status">Bereit</div>
+    <div id="results"></div>
+    <div id="map"></div>
   </div>
 
-  <button class="search-button">Suche</button>
-</div>
+  <script>
+    let map;
+    let geocoder;
+    let service;
+    let markers = [];
+
+    function initMap() {
+      const start = { lat: 50.1109, lng: 8.6821 };
+
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: start,
+        zoom: 11
+      });
+
+      geocoder = new google.maps.Geocoder();
+      service = new google.maps.places.PlacesService(map);
+
+      document.getElementById("searchButton").addEventListener("click", search);
+    }
+
+    function clearMarkers() {
+      markers.forEach(m => m.setMap(null));
+      markers = [];
+    }
+
+    function addMarker(pos, title) {
+      const marker = new google.maps.Marker({
+        position: pos,
+        map,
+        title
+      });
+      markers.push(marker);
+    }
+
+    function search() {
+      const location = document.getElementById("locationInput").value;
+
+      if (!location) {
+        alert("Adresse eingeben");
+        return;
+      }
+
+      document.getElementById("status").innerText = "Suche...";
+
+      geocoder.geocode({ address: location }, (res, status) => {
+        if (status !== "OK") {
+          document.getElementById("status").innerText = "Adresse nicht gefunden";
+          return;
+        }
+
+        const loc = res[0].geometry.location;
+
+        map.setCenter(loc);
+        map.setZoom(13);
+
+        clearMarkers();
+        addMarker(loc, "Dein Standort");
+
+        const request = {
+          location: loc,
+          radius: 5000,
+          keyword: "Baumarkt OR OBI OR Hornbach OR Bauhaus"
+        };
+
+        service.nearbySearch(request, (results, status) => {
+          if (status !== google.maps.places.PlacesServiceStatus.OK) {
+            document.getElementById("status").innerText = "Keine Ergebnisse";
+            return;
+          }
+
+          const list = document.getElementById("results");
+          list.innerHTML = "";
+
+          results.forEach((place, i) => {
+            addMarker(place.geometry.location, place.name);
+
+            const div = document.createElement("div");
+            div.className = "result-card";
+            div.innerHTML = `<b>${i+1}. ${place.name}</b><br>${place.vicinity}`;
+            list.appendChild(div);
+          });
+
+          document.getElementById("status").innerText = "Baumärkte gefunden";
+        });
+      });
+    }
+
+    window.initMap = initMap;
+  </script>
+
+  <!-- 🔥 HIER DEIN API KEY EINSETZEN -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7RCu62ICAEdQkKOPdmueVaqpW6BFhM-M&libraries=places&callback=initMap"
+    async
+    defer
+  ></script>
+
 </body>
 </html>
