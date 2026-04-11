@@ -176,14 +176,33 @@
             document.getElementById("status").innerText = "Keine Ergebnisse";
             return;
           }
+const allowedNames = [
+  "OBI",
+  "Hornbach",
+  "Bauhaus",
+  "toom",
+  "hagebau",
+  "Raab Karcher",
+  "Späth",
+  "Späth-Knoll",
+  "BayWa",
+  "Würth"
+];
 
-          const sorted = results
-            .filter(place => place.geometry && place.geometry.location)
-            .map(place => ({
-              ...place,
-              distance: getDistance(loc, place.geometry.location)
-            }))
-            .sort((a, b) => a.distance - b.distance);
+const sorted = results
+  .filter(place => place.geometry && place.geometry.location)
+  .filter(place => {
+    const name = (place.name || "").toLowerCase();
+
+    return allowedNames.some(allowed =>
+      name.includes(allowed.toLowerCase())
+    );
+  })
+  .map(place => ({
+    ...place,
+    distance: getDistance(loc, place.geometry.location)
+  }))
+  .sort((a, b) => a.distance - b.distance);
 
           const list = document.getElementById("results");
           list.innerHTML = "";
