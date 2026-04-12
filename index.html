@@ -156,7 +156,7 @@
           return;
         }
 
-        console.log(res[0].formatted_address);
+        console.log("Gefundene Adresse:", res[0].formatted_address);
 
         const loc = res[0].geometry.location;
 
@@ -176,33 +176,33 @@
             document.getElementById("status").innerText = "Keine Ergebnisse";
             return;
           }
-const allowedNames = [
-  "OBI",
-  "Hornbach",
-  "Bauhaus",
-  "toom",
-  "hagebau",
-  "Raab Karcher",
-  "Späth",
-  "Späth-Knoll",
-  "BayWa",
-  "Würth"
-];
 
-const sorted = results
-  .filter(place => place.geometry && place.geometry.location)
-  .filter(place => {
-    const name = (place.name || "").toLowerCase();
+          const allowedNames = [
+            "OBI",
+            "Hornbach",
+            "Bauhaus",
+            "toom",
+            "hagebau",
+            "Raab Karcher",
+            "Späth",
+            "Späth-Knoll",
+            "BayWa",
+            "Würth"
+          ];
 
-    return allowedNames.some(allowed =>
-      name.includes(allowed.toLowerCase())
-    );
-  })
-  .map(place => ({
-    ...place,
-    distance: getDistance(loc, place.geometry.location)
-  }))
-  .sort((a, b) => a.distance - b.distance);
+          const sorted = results
+            .filter(place => place.geometry && place.geometry.location)
+            .filter(place => {
+              const name = (place.name || "").toLowerCase();
+              return allowedNames.some(allowed =>
+                name.includes(allowed.toLowerCase())
+              );
+            })
+            .map(place => ({
+              ...place,
+              distance: getDistance(loc, place.geometry.location)
+            }))
+            .sort((a, b) => a.distance - b.distance);
 
           const list = document.getElementById("results");
           list.innerHTML = "";
@@ -217,11 +217,16 @@ const sorted = results
               ${place.vicinity || "Adresse nicht verfügbar"}<br>
               Entfernung: ${place.distance.toFixed(2)} km
             `;
-
             list.appendChild(div);
           });
 
-          document.getElementById("status").innerText = "Baumärkte gefunden";
+          if (sorted.length === 0) {
+            document.getElementById("status").innerText =
+              "Keine passenden großen Baumärkte gefunden";
+          } else {
+            document.getElementById("status").innerText =
+              "Passende Baumärkte gefunden";
+          }
         });
       });
     }
