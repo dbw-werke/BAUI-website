@@ -24,6 +24,7 @@
 
     h1 {
       margin-top: 0;
+      margin-bottom: 20px;
     }
 
     .form-group {
@@ -52,23 +53,57 @@
 
     #status {
       margin-top: 16px;
+      margin-bottom: 20px;
+      font-size: 15px;
     }
 
     #results {
-      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .result-card {
-      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
       border: 1px solid #ddd;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      border-radius: 10px;
+      background: #fafafa;
     }
 
-    #map {
-      width: 100%;
-      height: 400px;
-      margin-top: 20px;
+    .result-left {
+      flex: 1;
+    }
+
+    .result-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .result-address {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .result-distance {
+      color: #222;
+      font-size: 14px;
+    }
+
+    .result-right {
+      min-width: 90px;
+      text-align: right;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .hidden-map {
+      display: none;
     }
   </style>
 </head>
@@ -78,32 +113,36 @@
     <h1>Baumarkt Finder</h1>
 
     <form id="searchForm" class="form-group">
-      <input id="locationInput" placeholder="Adresse eingeben..." />
-      <input id="materialInput" placeholder="Material eingeben..." />
+      <input id="locationInput" placeholder="Straße oder Adresse eingeben..." />
       <button id="searchButton" type="submit">Suchen</button>
     </form>
 
     <div id="status">Bereit</div>
     <div id="results"></div>
-    <div id="map"></div>
+
+    <!-- versteckt, nur damit PlacesService sauber läuft -->
+    <div id="map" class="hidden-map"></div>
   </div>
 
   <script>
     let map;
     let geocoder;
-    let service;
-    let markers = [];
+    let placesService;
+    let RouteMatrix;
 
-    function initMap() {
+    async function initMap() {
       const start = { lat: 50.1109, lng: 8.6821 };
 
       map = new google.maps.Map(document.getElementById("map"), {
         center: start,
-        zoom: 11
+        zoom: 11,
       });
 
       geocoder = new google.maps.Geocoder();
-      service = new google.maps.places.PlacesService(map);
+      placesService = new google.maps.places.PlacesService(map);
+
+      const routesLib = await google.maps.importLibrary("routes");
+      RouteMatrix = routesLib.RouteMatrix;
 
       document.getElementById("searchForm").addEventListener("submit", function (e) {
         e.preventDefault();
@@ -111,134 +150,146 @@
       });
     }
 
-    function clearMarkers() {
-      markers.forEach(m => m.setMap(null));
-      markers = [];
-    }
-
-    function addMarker(pos, title) {
-      const marker = new google.maps.Marker({
-        position: pos,
-        map: map,
-        title: title
+    function geocodeAddress(address) {
+      return new Promise((resolve, reject) => {
+        geocoder.geocode({ address }, (results, status) => {
+          if (status !== "OK" || !results[0]) {
+            reject(new Error("Adresse nicht gefunden"));
+            return;
+          }
+          resolve(results[0]);
+        });
       });
-      markers.push(marker);
     }
 
-    function getDistance(a, b) {
-      const R = 6371;
-      const dLat = (b.lat() - a.lat()) * Math.PI / 180;
-      const dLng = (b.lng() - a.lng()) * Math.PI / 180;
-
-      const lat1 = a.lat() * Math.PI / 180;
-      const lat2 = b.lat() * Math.PI / 180;
-
-      const x =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(lat1) * Math.cos(lat2);
-
-      const d = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
-      return R * d;
+    function nearbySearch(request) {
+      return new Promise((resolve, reject) => {
+        placesService.nearbySearch(request, (results, status) => {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+            reject(new Error("Keine Ergebnisse"));
+            return;
+          }
+          resolve(results);
+        });
+      });
     }
 
-    function search() {
+    async function search() {
       const location = document.getElementById("locationInput").value.trim();
+      const resultsEl = document.getElementById("results");
+      const statusEl = document.getElementById("status");
 
       if (!location) {
-        alert("Adresse eingeben");
+        alert("Bitte eine Adresse eingeben");
         return;
       }
 
-      document.getElementById("status").innerText = "Suche...";
-      document.getElementById("results").innerHTML = "";
-      clearMarkers();
+      statusEl.innerText = "Suche Baumärkte...";
+      resultsEl.innerHTML = "";
 
-      geocoder.geocode({ address: location }, (res, status) => {
-        if (status !== "OK" || !res[0]) {
-          document.getElementById("status").innerText = "Adresse nicht gefunden";
-          return;
-        }
-
-        console.log("Gefundene Adresse:", res[0].formatted_address);
-
-        const loc = res[0].geometry.location;
-
-        map.setCenter(loc);
-        map.setZoom(13);
-
-        addMarker(loc, "Dein Standort");
+      try {
+        const geocodeResult = await geocodeAddress(location);
+        const origin = geocodeResult.geometry.location;
 
         const request = {
-          location: loc,
+          location: origin,
           rankBy: google.maps.places.RankBy.DISTANCE,
           keyword: "Baumarkt"
         };
 
-        service.nearbySearch(request, (results, status) => {
-          if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-            document.getElementById("status").innerText = "Keine Ergebnisse";
-            return;
-          }
+        const rawPlaces = await nearbySearch(request);
 
-          const allowedNames = [
-            "OBI",
-            "Hornbach",
-            "Bauhaus",
-            "toom",
-            "hagebau",
-            "Raab Karcher",
-            "Späth",
-            "Späth-Knoll",
-            "BayWa",
-            "Würth"
-          ];
+        const allowedNames = [
+          "OBI",
+          "Hornbach",
+          "Bauhaus",
+          "toom",
+          "hagebau",
+          "Raab Karcher",
+          "Späth",
+          "Späth-Knoll",
+          "BayWa",
+          "Würth"
+        ];
 
-          const sorted = results
-            .filter(place => place.geometry && place.geometry.location)
-            .filter(place => {
-              const name = (place.name || "").toLowerCase();
-              return allowedNames.some(allowed =>
-                name.includes(allowed.toLowerCase())
-              );
-            })
-            .map(place => ({
-              ...place,
-              distance: getDistance(loc, place.geometry.location)
-            }))
-            .sort((a, b) => a.distance - b.distance);
-
-          const list = document.getElementById("results");
-          list.innerHTML = "";
-
-          sorted.forEach((place, i) => {
-            addMarker(place.geometry.location, place.name);
-
-            const div = document.createElement("div");
-            div.className = "result-card";
-            div.innerHTML = `
-              <b>${i + 1}. ${place.name}</b><br>
-              ${place.vicinity || "Adresse nicht verfügbar"}<br>
-              Entfernung: ${place.distance.toFixed(2)} km
-            `;
-            list.appendChild(div);
+        const filteredPlaces = rawPlaces
+          .filter(place => place.geometry && place.geometry.location)
+          .filter(place => {
+            const name = (place.name || "").toLowerCase();
+            return allowedNames.some(allowed =>
+              name.includes(allowed.toLowerCase())
+            );
           });
 
-          if (sorted.length === 0) {
-            document.getElementById("status").innerText =
-              "Keine passenden großen Baumärkte gefunden";
-          } else {
-            document.getElementById("status").innerText =
-              "Passende Baumärkte gefunden";
-          }
+        if (filteredPlaces.length === 0) {
+          statusEl.innerText = "Keine passenden Baumärkte gefunden";
+          return;
+        }
+
+        const matrixResult = await RouteMatrix.computeRouteMatrix({
+          origins: [origin],
+          destinations: filteredPlaces.map(place => place.geometry.location),
+          travelMode: "DRIVING",
+          routingPreference: "TRAFFIC_AWARE",
+          units: google.maps.UnitSystem.METRIC,
+          fields: ["distanceMeters", "durationMillis", "condition"]
         });
-      });
+
+        const items = matrixResult.matrix.rows[0].items;
+
+        const enrichedPlaces = filteredPlaces
+          .map((place, index) => {
+            const item = items[index];
+
+            if (!item || item.condition !== "ROUTE_EXISTS") {
+              return null;
+            }
+
+            return {
+              ...place,
+              distanceMeters: item.distanceMeters,
+              durationMillis: item.durationMillis
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => a.durationMillis - b.durationMillis);
+
+        if (enrichedPlaces.length === 0) {
+          statusEl.innerText = "Keine fahrbare Route zu den Treffern gefunden";
+          return;
+        }
+
+        resultsEl.innerHTML = "";
+
+        enrichedPlaces.forEach((place) => {
+          const km = (place.distanceMeters / 1000).toFixed(1);
+          const minutes = Math.round(place.durationMillis / 60000);
+
+          const div = document.createElement("div");
+          div.className = "result-card";
+          div.innerHTML = `
+            <div class="result-left">
+              <div class="result-name">${place.name}</div>
+              <div class="result-address">${place.vicinity || "Adresse nicht verfügbar"}</div>
+              <div class="result-distance">Strecke: ${km} km</div>
+            </div>
+            <div class="result-right">${minutes} min</div>
+          `;
+          resultsEl.appendChild(div);
+        });
+
+        statusEl.innerText = `${enrichedPlaces.length} passende Baumärkte gefunden`;
+      } catch (error) {
+        console.error(error);
+        statusEl.innerText = error.message || "Fehler bei der Suche";
+      }
     }
 
     window.initMap = initMap;
   </script>
 
   <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBA-qCvlYckIMRyFHzaOeL9zsPDqXqiT44&libraries=places&callback=initMap"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTVyuWYu-6WUlzz_QEDfQUevcC-sduDqM&libraries=places,routes&callback=initMap"
     async
     defer
   ></script>
