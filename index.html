@@ -321,27 +321,34 @@
     }
 
     function getDistanceMatrix(origin, destinations) {
-      return new Promise((resolve, reject) => {
-        distanceMatrixService.getDistanceMatrix(
-          {
-            origins: [origin],
-            destinations: destinations,
-            travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
-            drivingOptions: {
-              departureTime: new Date()
-            }
-          },
-          (response, status) => {
-            if (status !== "OK" || !response || !response.rows || !response.rows[0]) {
-              reject(new Error("Fahrzeit konnte nicht berechnet werden"));
-              return;
-            }
-            resolve(response.rows[0].elements);
-          }
-        );
-      });
-    }
+  return new Promise((resolve) => {
+    distanceMatrixService.getDistanceMatrix(
+      {
+        origins: [origin],
+        destinations: destinations,
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        drivingOptions: {
+          departureTime: new Date()
+        }
+      },
+      (response, status) => {
+        if (
+          status !== "OK" ||
+          !response ||
+          !response.rows ||
+          !response.rows[0] ||
+          !response.rows[0].elements
+        ) {
+          resolve(null);
+          return;
+        }
+
+        resolve(response.rows[0].elements);
+      }
+    );
+  });
+}
 
     function formatKmFromMeters(meters) {
       return (meters / 1000).toFixed(1).replace(".", ",");
@@ -405,39 +412,47 @@
           return;
         }
 
-        const destinations = filteredPlaces.map(place => place.geometry.location);
-        const matrixElements = await getDistanceMatrix(origin, destinations);
+const destinations = filteredPlaces.map(place => place.geometry.location);
+const matrixElements = await getDistanceMatrix(origin, destinations);
 
-        const enrichedPlaces = filteredPlaces
-          .map((place, index) => {
-            const routeInfo = matrixElements[index];
+const enrichedPlaces = filteredPlaces
+  .map((place, index) => {
+    const fallbackDistanceMeters = Math.round(place.airDistanceKm * 1000);
 
-            if (!routeInfo || routeInfo.status !== "OK") {
-              return {
-                ...place,
-                distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
-                distanceMeters: Math.round(place.airDistanceKm * 1000),
-                durationText: "k. A.",
-                durationMinutes: null
-              };
-            }
+    if (!matrixElements) {
+      return {
+        ...place,
+        distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+        distanceMeters: fallbackDistanceMeters,
+        durationText: "nicht verfügbar",
+        durationMinutes: null
+      };
+    }
 
-            const distanceMeters = routeInfo.distance?.value ?? null;
-            const durationSeconds = routeInfo.duration?.value ?? null;
+    const routeInfo = matrixElements[index];
 
-            return {
-              ...place,
-              distanceText: routeInfo.distance?.text || `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
-              distanceMeters,
-              durationText: routeInfo.duration?.text || "k. A.",
-              durationMinutes: durationSeconds ? Math.round(durationSeconds / 60) : null
-            };
-          })
-          .sort((a, b) => {
-            const aMeters = a.distanceMeters ?? Number.MAX_SAFE_INTEGER;
-            const bMeters = b.distanceMeters ?? Number.MAX_SAFE_INTEGER;
-            return aMeters - bMeters;
-          });
+    if (!routeInfo || routeInfo.status !== "OK") {
+      return {
+        ...place,
+        distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+        distanceMeters: fallbackDistanceMeters,
+        durationText: "nicht verfügbar",
+        durationMinutes: null
+      };
+    }
+
+    const distanceMeters = routeInfo.distance?.value ?? fallbackDistanceMeters;
+    const durationSeconds = routeInfo.duration?.value ?? null;
+
+    return {
+      ...place,
+      distanceText: routeInfo.distance?.text || `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+      distanceMeters,
+      durationText: routeInfo.duration?.text || "nicht verfügbar",
+      durationMinutes: durationSeconds ? Math.round(durationSeconds / 60) : null
+    };
+  })
+  .sort((a, b) => a.distanceMeters - b.distanceMeters);
 
         resultsEl.innerHTML = "";
 
@@ -466,7 +481,11 @@
           resultsEl.appendChild(div);
         });
 
-        statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden`;
+      if (matrixElements) {
+  statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden`;
+} else {
+  statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden – Fahrzeit derzeit nicht verfügbar`;
+}
       } catch (error) {
         console.error(error);
         statusEl.innerText = error.message || "Fehler bei der Suche";
