@@ -6,63 +6,110 @@
   <title>Baumarkt Finder</title>
 
   <style>
+    :root {
+      --bg: #2f2f2f;
+      --panel: #3a3a3a;
+      --panel-2: #444444;
+      --text: #f3f3f3;
+      --muted: #c9c9c9;
+      --border: #5a5a5a;
+      --red: #e53935;
+      --black: #111111;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f5f5f5;
+      background: var(--bg);
+      color: var(--text);
     }
 
     .wrapper {
-      max-width: 900px;
+      max-width: 980px;
       margin: 40px auto;
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      background: var(--panel);
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--border);
     }
 
     h1 {
       margin-top: 0;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      color: var(--red);
+      font-size: 32px;
+      letter-spacing: 0.3px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 20px;
     }
 
     input {
-      padding: 14px;
+      padding: 15px 16px;
       font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       width: 100%;
-      box-sizing: border-box;
+      background: #2b2b2b;
+      color: var(--white);
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #a9a9a9;
+    }
+
+    input:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.15);
     }
 
     button {
-      padding: 14px;
+      padding: 15px 16px;
       font-size: 16px;
+      font-weight: bold;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      background: black;
-      color: white;
+      background: var(--red);
+      color: var(--white);
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
     #status {
-      margin-top: 16px;
-      margin-bottom: 20px;
+      margin-top: 8px;
+      margin-bottom: 22px;
       font-size: 15px;
+      color: var(--muted);
+      min-height: 20px;
     }
 
     #results {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .result-card {
@@ -70,10 +117,10 @@
       justify-content: space-between;
       align-items: center;
       gap: 16px;
-      padding: 16px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: #fafafa;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel-2);
     }
 
     .result-left {
@@ -81,27 +128,45 @@
     }
 
     .result-name {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: bold;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      color: var(--white);
     }
 
     .result-address {
-      color: #555;
+      color: var(--muted);
       font-size: 14px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      line-height: 1.45;
     }
 
     .result-product {
-      color: #222;
+      color: var(--white);
       font-size: 14px;
+      margin-bottom: 8px;
     }
 
-    .result-right {
-      min-width: 100px;
-      text-align: right;
+    .result-meta {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 14px;
       font-weight: bold;
-      font-size: 18px;
+    }
+
+    .distance-km {
+      color: var(--black);
+      background: #f0f0f0;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .time-min {
+      color: var(--red);
+      background: #fff3f3;
+      padding: 6px 10px;
+      border-radius: 999px;
     }
 
     #map {
@@ -109,6 +174,13 @@
       width: 1px;
       height: 1px;
       overflow: hidden;
+    }
+
+    @media (max-width: 700px) {
+      .result-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -140,8 +212,23 @@
     let map;
     let geocoder;
     let placesService;
+    let distanceMatrixService;
     let autocomplete;
-let selectedPlace = null;
+    let selectedPlace = null;
+
+    const allowedNames = [
+      "OBI",
+      "Hornbach",
+      "Bauhaus",
+      "toom",
+      "hagebau",
+      "Raab Karcher",
+      "Späth",
+      "Späth-Knoll",
+      "BayWa",
+      "Würth"
+    ];
+
     function initMap() {
       const start = { lat: 50.1109, lng: 8.6821 };
 
@@ -152,31 +239,38 @@ let selectedPlace = null;
 
       geocoder = new google.maps.Geocoder();
       placesService = new google.maps.places.PlacesService(map);
+      distanceMatrixService = new google.maps.DistanceMatrixService();
 
       const locationInput = document.getElementById("locationInput");
 
-      autocomplete.addListener("place_changed", () => {
-  const place = autocomplete.getPlace();
-
-  if (!place) return;
-
-  selectedPlace = place;
-
-  if (place.formatted_address) {
-    locationInput.value = place.formatted_address;
-  }
-});
+      autocomplete = new google.maps.places.Autocomplete(locationInput, {
+        componentRestrictions: { country: ["de"] },
+        fields: ["formatted_address", "geometry", "name"],
+        types: ["address"]
+      });
 
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
-        if (place && place.formatted_address) {
+
+        if (!place || !place.geometry || !place.geometry.location) {
+          selectedPlace = null;
+          return;
+        }
+
+        selectedPlace = place;
+
+        if (place.formatted_address) {
           locationInput.value = place.formatted_address;
         }
       });
 
-      document.getElementById("searchForm").addEventListener("submit", function (e) {
+      locationInput.addEventListener("input", () => {
+        selectedPlace = null;
+      });
+
+      document.getElementById("searchForm").addEventListener("submit", async function (e) {
         e.preventDefault();
-        search();
+        await search();
       });
     }
 
@@ -202,7 +296,7 @@ let selectedPlace = null;
       return new Promise((resolve, reject) => {
         placesService.nearbySearch(request, (results, status) => {
           if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-            reject(new Error("Keine Ergebnisse"));
+            reject(new Error("Keine Baumärkte gefunden"));
             return;
           }
           resolve(results);
@@ -210,7 +304,7 @@ let selectedPlace = null;
       });
     }
 
-    function getDistanceKm(origin, destination) {
+    function getAirDistanceKm(origin, destination) {
       const R = 6371;
       const dLat = (destination.lat() - origin.lat()) * Math.PI / 180;
       const dLng = (destination.lng() - origin.lng()) * Math.PI / 180;
@@ -226,8 +320,31 @@ let selectedPlace = null;
       return R * c;
     }
 
-    function estimateMinutes(distanceKm) {
-      return Math.max(3, Math.round(distanceKm * 2.2));
+    function getDistanceMatrix(origin, destinations) {
+      return new Promise((resolve, reject) => {
+        distanceMatrixService.getDistanceMatrix(
+          {
+            origins: [origin],
+            destinations: destinations,
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.METRIC,
+            drivingOptions: {
+              departureTime: new Date()
+            }
+          },
+          (response, status) => {
+            if (status !== "OK" || !response || !response.rows || !response.rows[0]) {
+              reject(new Error("Fahrzeit konnte nicht berechnet werden"));
+              return;
+            }
+            resolve(response.rows[0].elements);
+          }
+        );
+      });
+    }
+
+    function formatKmFromMeters(meters) {
+      return (meters / 1000).toFixed(1).replace(".", ",");
     }
 
     async function search() {
@@ -235,24 +352,31 @@ let selectedPlace = null;
       const product = document.getElementById("productInput").value.trim();
       const resultsEl = document.getElementById("results");
       const statusEl = document.getElementById("status");
+      const searchButton = document.getElementById("searchButton");
 
       if (!location) {
         alert("Bitte eine Adresse eingeben");
         return;
       }
 
-      statusEl.innerText = "Suche Baumärkte...";
+      statusEl.innerText = "Suche Baumärkte in Ihrer Nähe...";
       resultsEl.innerHTML = "";
+      searchButton.disabled = true;
 
       try {
         let origin;
 
-if (selectedPlace && selectedPlace.geometry && selectedPlace.formatted_address === location) {
-  origin = selectedPlace.geometry.location;
-} else {
-  const geocodeResult = await geocodeAddress(location);
-  origin = geocodeResult.geometry.location;
-}
+        if (
+          selectedPlace &&
+          selectedPlace.geometry &&
+          selectedPlace.geometry.location &&
+          selectedPlace.formatted_address === location
+        ) {
+          origin = selectedPlace.geometry.location;
+        } else {
+          const geocodeResult = await geocodeAddress(location);
+          origin = geocodeResult.geometry.location;
+        }
 
         const request = {
           location: origin,
@@ -262,64 +386,102 @@ if (selectedPlace && selectedPlace.geometry && selectedPlace.formatted_address =
 
         const rawPlaces = await nearbySearch(request);
 
-        const allowedNames = [
-          "OBI",
-          "Hornbach",
-          "Bauhaus",
-          "toom",
-          "hagebau",
-          "Raab Karcher",
-          "Späth",
-          "Späth-Knoll",
-          "BayWa",
-          "Würth"
-        ];
-
-        const nearestPlaces = rawPlaces
+        const filteredPlaces = rawPlaces
           .filter(place => place.geometry && place.geometry.location)
           .filter(place => {
             const name = (place.name || "").toLowerCase();
-            return allowedNames.some(allowed =>
-              name.includes(allowed.toLowerCase())
-            );
+            return allowedNames.some(allowed => name.includes(allowed.toLowerCase()));
           })
           .map(place => ({
             ...place,
-            distanceKm: getDistanceKm(origin, place.geometry.location)
+            airDistanceKm: getAirDistanceKm(origin, place.geometry.location)
           }))
-          .sort((a, b) => a.distanceKm - b.distanceKm)
+          .sort((a, b) => a.airDistanceKm - b.airDistanceKm)
           .slice(0, 10);
 
-        if (nearestPlaces.length === 0) {
+        if (filteredPlaces.length === 0) {
           statusEl.innerText = "Keine passenden Baumärkte gefunden";
+          searchButton.disabled = false;
           return;
         }
 
+        const destinations = filteredPlaces.map(place => place.geometry.location);
+        const matrixElements = await getDistanceMatrix(origin, destinations);
+
+        const enrichedPlaces = filteredPlaces
+          .map((place, index) => {
+            const routeInfo = matrixElements[index];
+
+            if (!routeInfo || routeInfo.status !== "OK") {
+              return {
+                ...place,
+                distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+                distanceMeters: Math.round(place.airDistanceKm * 1000),
+                durationText: "k. A.",
+                durationMinutes: null
+              };
+            }
+
+            const distanceMeters = routeInfo.distance?.value ?? null;
+            const durationSeconds = routeInfo.duration?.value ?? null;
+
+            return {
+              ...place,
+              distanceText: routeInfo.distance?.text || `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+              distanceMeters,
+              durationText: routeInfo.duration?.text || "k. A.",
+              durationMinutes: durationSeconds ? Math.round(durationSeconds / 60) : null
+            };
+          })
+          .sort((a, b) => {
+            const aMeters = a.distanceMeters ?? Number.MAX_SAFE_INTEGER;
+            const bMeters = b.distanceMeters ?? Number.MAX_SAFE_INTEGER;
+            return aMeters - bMeters;
+          });
+
         resultsEl.innerHTML = "";
 
-        nearestPlaces.forEach((place) => {
-          const minutes = estimateMinutes(place.distanceKm);
+        enrichedPlaces.forEach((place) => {
+          const kmText = place.distanceMeters
+            ? `${formatKmFromMeters(place.distanceMeters)} km`
+            : place.distanceText;
+
+          const minuteText = place.durationMinutes
+            ? `${place.durationMinutes} min`
+            : place.durationText;
 
           const div = document.createElement("div");
           div.className = "result-card";
           div.innerHTML = `
             <div class="result-left">
-              <div class="result-name">${place.name}</div>
-              <div class="result-address">${place.vicinity || "Adresse nicht verfügbar"}</div>
-              <div class="result-product">
-                Produkt: ${product ? product : "nicht angegeben"}
+              <div class="result-name">${escapeHtml(place.name || "Unbekannter Baumarkt")}</div>
+              <div class="result-address">${escapeHtml(place.vicinity || "Adresse nicht verfügbar")}</div>
+              <div class="result-product">Produkt: ${escapeHtml(product || "nicht angegeben")}</div>
+              <div class="result-meta">
+                <span class="distance-km">Entfernung: ${escapeHtml(kmText)}</span>
+                <span class="time-min">Fahrzeit: ${escapeHtml(minuteText)}</span>
               </div>
             </div>
-            <div class="result-right">${minutes} min</div>
           `;
           resultsEl.appendChild(div);
         });
 
-        statusEl.innerText = `${nearestPlaces.length} nächstgelegene Baumärkte gefunden`;
+        statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden`;
       } catch (error) {
         console.error(error);
         statusEl.innerText = error.message || "Fehler bei der Suche";
+      } finally {
+        searchButton.disabled = false;
       }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     window.initMap = initMap;
