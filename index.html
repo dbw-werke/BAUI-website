@@ -77,11 +77,11 @@
   <div class="wrapper">
     <h1>Baumarkt Finder</h1>
 
-    <div class="form-group">
-      <input id="locationInput" placeholder="Adresse eingeben..." />
-      <input id="materialInput" placeholder="Material eingeben..." />
-      <button id="searchButton">Suchen</button>
-    </div>
+   <form id="searchForm" class="form-group">
+  <input id="locationInput" placeholder="Adresse eingeben..." />
+  <input id="materialInput" placeholder="Material eingeben..." />
+  <button id="searchButton" type="submit">Suchen</button>
+</form>
 
     <div id="status">Bereit</div>
     <div id="results"></div>
@@ -105,9 +105,10 @@
       geocoder = new google.maps.Geocoder();
       service = new google.maps.places.PlacesService(map);
 
-      document.getElementById("searchButton").addEventListener("click", search);
-    }
-
+      document.getElementById("searchForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  search();
+});
     function clearMarkers() {
       markers.forEach(m => m.setMap(null));
       markers = [];
