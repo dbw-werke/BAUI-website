@@ -19,7 +19,7 @@
       background: white;
       padding: 24px;
       border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
@@ -32,7 +32,6 @@
       flex-direction: column;
       gap: 12px;
       margin-bottom: 20px;
-      position: relative;
     }
 
     input {
@@ -103,7 +102,7 @@
       font-size: 18px;
     }
 
-    .hidden-map {
+    #map {
       display: none;
       width: 1px;
       height: 1px;
@@ -111,20 +110,23 @@
     }
   </style>
 </head>
-
 <body>
   <div class="wrapper">
     <h1>Baumarkt Finder</h1>
 
     <form id="searchForm" class="form-group">
-      <input id="locationInput" placeholder="Straße oder Adresse in Deutschland eingeben..." autocomplete="off" />
+      <input
+        id="locationInput"
+        type="text"
+        placeholder="Straße oder Adresse in Deutschland eingeben..."
+        autocomplete="off"
+      />
       <button id="searchButton" type="submit">Suchen</button>
     </form>
 
     <div id="status">Bereit</div>
     <div id="results"></div>
-
-    <div id="map" class="hidden-map"></div>
+    <div id="map"></div>
   </div>
 
   <script>
@@ -132,38 +134,29 @@
     let geocoder;
     let placesService;
     let autocomplete;
-    let RouteMatrix;
 
-    async function initMap() {
+    function initMap() {
       const start = { lat: 50.1109, lng: 8.6821 };
 
       map = new google.maps.Map(document.getElementById("map"), {
         center: start,
-        zoom: 11,
+        zoom: 11
       });
 
       geocoder = new google.maps.Geocoder();
       placesService = new google.maps.places.PlacesService(map);
 
-      // Routes Library laden
-      const routesLib = await google.maps.importLibrary("routes");
-      RouteMatrix = routesLib.RouteMatrix;
-
-      // Autocomplete auf bestehendes Suchfeld
       const input = document.getElementById("locationInput");
 
       autocomplete = new google.maps.places.Autocomplete(input, {
         componentRestrictions: { country: "de" },
-        fields: ["formatted_address", "geometry", "name", "address_components"],
+        fields: ["formatted_address", "geometry", "name"],
         types: ["address"]
       });
 
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
-
-        if (!place) return;
-
-        if (place.formatted_address) {
+        if (place && place.formatted_address) {
           input.value = place.formatted_address;
         }
       });
@@ -181,12 +174,12 @@
             address: address,
             componentRestrictions: { country: "DE" }
           },
-          (res, status) => {
-            if (status !== "OK" || !res || !res[0]) {
+          (results, status) => {
+            if (status !== "OK" || !results || !results[0]) {
               reject(new Error("Adresse nicht gefunden"));
               return;
             }
-            resolve(res[0]);
+            resolve(results[0]);
           }
         );
       });
@@ -202,6 +195,22 @@
           resolve(results);
         });
       });
+    }
+
+    function getDistanceKm(origin, destination) {
+      const R = 6371;
+      const dLat = (destination.lat() - origin.lat()) * Math.PI / 180;
+      const dLng = (destination.lng() - origin.lng()) * Math.PI / 180;
+      const lat1 = origin.lat() * Math.PI / 180;
+      const lat2 = destination.lat() * Math.PI / 180;
+
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLng / 2) * Math.sin(dLng / 2) *
+        Math.cos(lat1) * Math.cos(lat2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
     }
 
     async function search() {
@@ -242,58 +251,30 @@
           "Würth"
         ];
 
-        const filteredPlaces = rawPlaces
+        const nearestPlaces = rawPlaces
           .filter(place => place.geometry && place.geometry.location)
           .filter(place => {
             const name = (place.name || "").toLowerCase();
             return allowedNames.some(allowed =>
               name.includes(allowed.toLowerCase())
             );
-          });
-
-        if (filteredPlaces.length === 0) {
-          statusEl.innerText = "Keine passenden Baumärkte gefunden";
-          return;
-        }
-
-        const matrixResult = await RouteMatrix.computeRouteMatrix({
-          origins: [origin],
-          destinations: filteredPlaces.map(place => place.geometry.location),
-          travelMode: "DRIVING",
-          routingPreference: "TRAFFIC_AWARE",
-          units: google.maps.UnitSystem.METRIC,
-          fields: ["distanceMeters", "durationMillis", "condition"]
-        });
-
-        const items = matrixResult.matrix.rows[0].items;
-
-        const enrichedPlaces = filteredPlaces
-          .map((place, index) => {
-            const item = items[index];
-
-            if (!item || item.condition !== "ROUTE_EXISTS") {
-              return null;
-            }
-
-            return {
-              ...place,
-              distanceMeters: item.distanceMeters,
-              durationMillis: item.durationMillis
-            };
           })
-          .filter(Boolean)
-          .sort((a, b) => a.durationMillis - b.durationMillis);
+          .map(place => ({
+            ...place,
+            distanceKm: getDistanceKm(origin, place.geometry.location)
+          }))
+          .sort((a, b) => a.distanceKm - b.distanceKm)
+          .slice(0, 10);
 
-        if (enrichedPlaces.length === 0) {
-          statusEl.innerText = "Keine fahrbare Route zu den Treffern gefunden";
+        if (nearestPlaces.length === 0) {
+          statusEl.innerText = "Keine passenden Baumärkte gefunden";
           return;
         }
 
         resultsEl.innerHTML = "";
 
-        enrichedPlaces.forEach((place) => {
-          const km = (place.distanceMeters / 1000).toFixed(1);
-          const minutes = Math.round(place.durationMillis / 60000);
+        nearestPlaces.forEach((place) => {
+          const approxMinutes = Math.max(3, Math.round(place.distanceKm * 2.2));
 
           const div = document.createElement("div");
           div.className = "result-card";
@@ -301,14 +282,14 @@
             <div class="result-left">
               <div class="result-name">${place.name}</div>
               <div class="result-address">${place.vicinity || "Adresse nicht verfügbar"}</div>
-              <div class="result-distance">Strecke: ${km} km</div>
+              <div class="result-distance">Entfernung: ${place.distanceKm.toFixed(1)} km</div>
             </div>
-            <div class="result-right">${minutes} min</div>
+            <div class="result-right">${approxMinutes} min</div>
           `;
           resultsEl.appendChild(div);
         });
 
-        statusEl.innerText = `${enrichedPlaces.length} passende Baumärkte gefunden`;
+        statusEl.innerText = `${nearestPlaces.length} nächstgelegene Baumärkte gefunden`;
       } catch (error) {
         console.error(error);
         statusEl.innerText = error.message || "Fehler bei der Suche";
@@ -319,7 +300,7 @@
   </script>
 
   <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7RCu62ICAEdQkKOPdmueVaqpW6BFhM-M&libraries=places,routes&v=beta&callback=initMap"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7RCu62ICAEdQkKOPdmueVaqpW6BFhM-M&libraries=places&callback=initMap"
     async
     defer
   ></script>
