@@ -141,7 +141,7 @@
     let geocoder;
     let placesService;
     let autocomplete;
-
+let selectedPlace = null;
     function initMap() {
       const start = { lat: 50.1109, lng: 8.6821 };
 
@@ -155,11 +155,17 @@
 
       const locationInput = document.getElementById("locationInput");
 
-      autocomplete = new google.maps.places.Autocomplete(locationInput, {
-        componentRestrictions: { country: "de" },
-        fields: ["formatted_address", "geometry", "name"],
-        types: ["address"]
-      });
+      autocomplete.addListener("place_changed", () => {
+  const place = autocomplete.getPlace();
+
+  if (!place) return;
+
+  selectedPlace = place;
+
+  if (place.formatted_address) {
+    locationInput.value = place.formatted_address;
+  }
+});
 
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
@@ -239,8 +245,14 @@
       resultsEl.innerHTML = "";
 
       try {
-        const geocodeResult = await geocodeAddress(location);
-        const origin = geocodeResult.geometry.location;
+        let origin;
+
+if (selectedPlace && selectedPlace.geometry && selectedPlace.formatted_address === location) {
+  origin = selectedPlace.geometry.location;
+} else {
+  const geocodeResult = await geocodeAddress(location);
+  origin = geocodeResult.geometry.location;
+}
 
         const request = {
           location: origin,
