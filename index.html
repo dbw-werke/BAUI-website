@@ -112,20 +112,57 @@
       gap: 14px;
     }
 
-    .result-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--panel-2);
-    }
+   .result-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-2);
+  min-height: 180px;
+}
 
-    .result-left {
-      flex: 1;
-    }
+.result-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.result-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-logo-slot {
+  width: 180px;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.store-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  display: block;
+}
+
+.store-logo-fallback {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  border: 1px solid #6a6a6a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #d8d8d8;
+}
 
     .result-name {
       font-size: 19px;
@@ -176,12 +213,25 @@
       overflow: hidden;
     }
 
-    @media (max-width: 700px) {
-      .result-card {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
+  @media (max-width: 900px) {
+  .result-card {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .result-logo-slot {
+    width: 100%;
+    min-width: 100%;
+    justify-content: flex-start;
+    padding-top: 4px;
+  }
+
+  .store-logo,
+  .store-logo-fallback {
+    width: 90px;
+    height: 90px;
+  }
+}
   </style>
 </head>
 <body>
@@ -353,7 +403,36 @@
     function formatKmFromMeters(meters) {
       return (meters / 1000).toFixed(1).replace(".", ",");
     }
+function getStoreLogoByName(storeName) {
+  const name = (storeName || "").toLowerCase();
 
+  if (name.includes("obi")) return "images/obi.png";
+  if (name.includes("hornbach")) return "images/hornbach.png";
+  if (name.includes("bauhaus")) return "images/bauhaus.png";
+  if (name.includes("toom")) return "images/toom.png";
+  if (name.includes("hagebau")) return "images/hagebau.png";
+  if (name.includes("baywa")) return "images/baywa.png";
+  if (name.includes("würth") || name.includes("wuerth")) return "images/wuerth.png";
+
+  return null;
+}
+
+function createStoreLogoHtml(storeName) {
+  const logoPath = getStoreLogoByName(storeName);
+
+  if (logoPath) {
+    return `
+      <img
+        class="store-logo"
+        src="${logoPath}"
+        alt="${escapeHtml(storeName)} Logo"
+        onerror="this.outerHTML='<div class=&quot;store-logo-fallback&quot;>🏬</div>'"
+      />
+    `;
+  }
+
+  return `<div class="store-logo-fallback">🏬</div>`;
+}
     async function search() {
       const location = document.getElementById("locationInput").value.trim();
       const product = document.getElementById("productInput").value.trim();
@@ -468,16 +547,22 @@ const enrichedPlaces = filteredPlaces
           const div = document.createElement("div");
           div.className = "result-card";
           div.innerHTML = `
-            <div class="result-left">
-              <div class="result-name">${escapeHtml(place.name || "Unbekannter Baumarkt")}</div>
-              <div class="result-address">${escapeHtml(place.vicinity || "Adresse nicht verfügbar")}</div>
-              <div class="result-product">Produkt: ${escapeHtml(product || "nicht angegeben")}</div>
-              <div class="result-meta">
-                <span class="distance-km">Entfernung: ${escapeHtml(kmText)}</span>
-                <span class="time-min">Fahrzeit: ${escapeHtml(minuteText)}</span>
-              </div>
-            </div>
-          `;
+  <div class="result-content">
+    <div class="result-left">
+      <div class="result-name">${escapeHtml(place.name || "Unbekannter Baumarkt")}</div>
+      <div class="result-address">${escapeHtml(place.vicinity || "Adresse nicht verfügbar")}</div>
+      <div class="result-product">Produkt: ${escapeHtml(product || "nicht angegeben")}</div>
+      <div class="result-meta">
+        <span class="distance-km">Entfernung: ${escapeHtml(kmText)}</span>
+        <span class="time-min">Fahrzeit: ${escapeHtml(minuteText)}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-logo-slot">
+    ${createStoreLogoHtml(place.name || "Baumarkt")}
+  </div>
+`;
           resultsEl.appendChild(div);
         });
 
@@ -504,15 +589,14 @@ const enrichedPlaces = filteredPlaces
     }
 
     window.initMap = initMap;
-  </script>
-
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7RCu62ICAEdQkKOPdmueVaqpW6BFhM-M&libraries=places&callback=initMap"
     async
     defer
   ></script>
+
+  <script src="materials-database.js"></script>
+  <script src="generate-prices.js"></script>
+  <script src="product-compare.js"></script>
 </body>
 </html>
-<script src="materials-database.js"></script>
-<script src="generate-prices.js"></script>
-<script src="product-compare.js"></script>
