@@ -590,13 +590,20 @@ const enrichedPlaces = filteredPlaces
         .replace(/'/g, "&#039;");
     }
 
-    window.initMap = initMap;
+        window.initMap = initMap;
+  </script>
+
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7RCu62ICAEdQkKOPdmueVaqpW6BFhM-M&libraries=places&callback=initMap"
     async
     defer
   ></script>
 
+  <script src="materials-database.js"></script>
+  <script src="generate-prices.js"></script>
+  <script src="product-compare.js"></script>
+</body>
+</html>
   <script src="materials-database.js"></script>
   <script src="generate-prices.js"></script>
   <script src="product-compare.js"></script>
