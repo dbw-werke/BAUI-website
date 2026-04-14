@@ -406,13 +406,15 @@
 function getStoreLogoByName(storeName) {
   const name = (storeName || "").toLowerCase();
 
-  if (name.includes("obi")) return "images/obi.png";
-  if (name.includes("hornbach")) return "images/hornbach.png";
-  if (name.includes("bauhaus")) return "images/bauhaus.png";
-  if (name.includes("toom")) return "images/toom.png";
-  if (name.includes("hagebau")) return "images/hagebau.png";
-  if (name.includes("baywa")) return "images/baywa.png";
-  if (name.includes("würth") || name.includes("wuerth")) return "images/wuerth.png";
+  if (name.includes("obi")) return "imagesobi.jpg";
+  if (name.includes("hornbach")) return "imageshornbach.png";
+  if (name.includes("bauhaus")) return "bauhaus.png";
+  if (name.includes("toom")) return "toom.webp";
+  if (name.includes("hagebau")) return "hagebau.jpg";
+  if (name.includes("baywa")) return "baywa.png";
+  if (name.includes("würth") || name.includes("wuerth")) return "würth.png";
+  if (name.includes("raab")) return "raabkarcher.png";
+  if (name.includes("späth") || name.includes("spaeth")) return "späthknoll.jpg";
 
   return null;
 }
