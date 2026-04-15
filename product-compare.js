@@ -44,9 +44,9 @@
       div.className = "price-box";
 
       if (match && match.available) {
-        div.innerHTML = `💰 Preis: ${match.price} €`;
+        div.innerHTML = `Preis: ${match.price.toFixed(2).replace(".", ",")} €`;
       } else {
-        div.innerHTML = `❌ Nicht verfügbar`;
+div.innerHTML = `Preis: nicht verfügbar`;
       }
 
       left.appendChild(div);
