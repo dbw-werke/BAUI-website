@@ -213,7 +213,7 @@
       overflow: hidden;
     }
 
-  @media (max-width: 900px) {
+ @media (max-width: 900px) {
   .result-card {
     flex-direction: column;
     min-height: auto;
@@ -231,6 +231,18 @@
     width: 90px;
     height: 90px;
   }
+}
+
+.price-box {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #1f8f47;
+  background: #e8f8ee;
+  margin-top: 8px;
+}
 }
   </style>
 </head>
@@ -599,11 +611,6 @@ const enrichedPlaces = filteredPlaces
     defer
   ></script>
 
-  <script src="materials-database.js"></script>
-  <script src="generate-prices.js"></script>
-  <script src="product-compare.js"></script>
-</body>
-</html>
   <script src="materials-database.js"></script>
   <script src="generate-prices.js"></script>
   <script src="product-compare.js"></script>
