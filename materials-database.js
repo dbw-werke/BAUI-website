@@ -94,3 +94,35 @@ const MATERIAL_ALIASES = {
   daemmung: "Steinwolle 40mm",
   dämmung: "Steinwolle 40mm"
 };
+const MATERIAL_ALIASES = {
+  uniflott: "Knauf Uniflott 25kg",
+  spachtel: "Knauf Uniflott 25kg",
+  spachtelmasse: "Knauf Uniflott 25kg",
+  fugenspachtel: "Rigips VARIO Fugenspachtel",
+
+  rigips: "Rigips Bauplatte 12.5mm",
+  regips: "Rigips Bauplatte 12.5mm",
+  rigipsplatte: "Rigips Bauplatte 12.5mm",
+
+  gipskarton: "Knauf Gipskartonplatte 12.5mm",
+  gipskartonplatte: "Knauf Gipskartonplatte 12.5mm",
+
+  feuchtraumplatte: "Feuchtraumplatte 12.5mm",
+  brandschutzplatte: "Brandschutzplatte 12.5mm",
+
+  cw: "CW Profil 50",
+  "cw profil": "CW Profil 50",
+  uw: "UW Profil 50",
+  "uw profil": "UW Profil 50",
+
+  schnellbauschrauben: "Schnellbauschrauben 25mm",
+  schrauben: "Schnellbauschrauben 25mm",
+
+  fugendeckstreifen: "Fugendeckstreifen",
+  trennwandband: "Trennwandband",
+  eckschutzprofil: "Eckschutzprofil",
+
+  steinwolle: "Steinwolle 40mm",
+  daemmung: "Steinwolle 40mm",
+  dämmung: "Steinwolle 40mm"
+};
