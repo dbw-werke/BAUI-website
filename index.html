@@ -251,17 +251,20 @@
     <h1>Baumarkt Finder</h1>
 
     <form id="searchForm" class="form-group">
-      <input
-        id="locationInput"
-        type="text"
-        placeholder="Straße oder Adresse in Deutschland eingeben..."
-        autocomplete="off"
-      />
-      <input
-        id="productInput"
-        type="text"
-        placeholder="Produkt oder Material eingeben, z. B. Rigips, Zement, Schrauben..."
-      />
+     <input
+  id="locationInput"
+  type="text"
+  placeholder="Straße oder Adresse in Deutschland eingeben..."
+  autocomplete="off"
+/>
+
+<input
+  id="productInput"
+  type="text"
+  placeholder="Produkt oder Material eingeben, z. B. Rigips, Zement, Schrauben..."
+/>
+
+<div id="productSuggestions" class="suggestions-box"></div>
       <button id="searchButton" type="submit">Suchen</button>
     </form>
 
