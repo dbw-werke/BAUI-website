@@ -681,6 +681,20 @@ document.getElementById("sortPriceButton").addEventListener("click", () => {
     SUPABASE_URL,
     SUPABASE_ANON_KEY
   );
+  
+  async function testSupabase() {
+    const { data, error } = await supabaseClient
+      .from("analytics_events")
+      .insert({
+        event_name: "test_connection",
+        material_name: "test"
+      });
+
+    console.log("SUPABASE DATA:", data);
+    console.log("SUPABASE ERROR:", error);
+  }
+
+  testSupabase();
 </script>
 </body>
 </html>
