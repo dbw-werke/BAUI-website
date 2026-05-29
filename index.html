@@ -550,7 +550,43 @@
 
       return `<div class="store-logo-fallback">🏬</div>`;
     }
+const STORE_SEARCH_URLS = {
+  obi: "https://www.obi.de/search/{query}/",
+  hornbach: "https://www.hornbach.de/suche/?text={query}",
+  bauhaus: "https://www.bauhaus.info/suche/produkte?text={query}",
+  toom: "https://toom.de/suche/?query={query}",
+  hagebau: "https://www.hagebau.de/suche/?query={query}",
+  baywa: "https://www.baywa-baustoffe.de/suche?query={query}",
+  wuerth: "https://www.wuerth.de/web/de/awkg/suche/suche.php?query={query}"
+};
 
+function getStoreIdFromName(storeName) {
+  const name = String(storeName || "").toLowerCase();
+
+  if (name.includes("obi")) return "obi";
+  if (name.includes("hornbach")) return "hornbach";
+  if (name.includes("bauhaus")) return "bauhaus";
+  if (name.includes("toom")) return "toom";
+  if (name.includes("hagebau")) return "hagebau";
+  if (name.includes("baywa")) return "baywa";
+  if (name.includes("würth") || name.includes("wuerth")) return "wuerth";
+
+  return null;
+}
+
+function createStoreSearchUrl(storeName, productInput) {
+  const storeId = getStoreIdFromName(storeName);
+
+  const query = encodeURIComponent(productInput || "");
+
+  const template = STORE_SEARCH_URLS[storeId];
+
+  if (!template) {
+    return `https://www.google.com/search?q=${query}+${encodeURIComponent(storeName)}`;
+  }
+
+  return template.replace("{query}", query);
+}
     async function search() {
       const location = document.getElementById("locationInput").value.trim();
       const product = document.getElementById("productInput").value.trim();
@@ -696,16 +732,20 @@
             </div>
           `;
 
-          div.addEventListener("click", () => {
-            trackEvent("store_click", {
-              material_name: product || null,
-              store_name: place.name || null,
-              postal_area: anonymizePostalCode(location)
-            });
-          });
+       div.addEventListener("click", () => {
+  trackEvent("store_click", {
+    material_name: product || null,
+    store_name: place.name || null,
+    postal_area: anonymizePostalCode(location)
+  });
 
-          resultsEl.appendChild(div);
-        });
+  const searchUrl = createStoreSearchUrl(
+    place.name || "",
+    product || ""
+  );
+
+  window.open(searchUrl, "_blank", "noopener,noreferrer");
+});
 
         trackEvent("search_results", {
           material_name: product || null,
