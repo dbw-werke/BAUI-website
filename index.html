@@ -841,7 +841,7 @@ function toggleStoreActionPanel(card, place, product, location, kmText, minuteTe
             </div>
           `;
 
-    div.addEventListener("click", () => {
+div.addEventListener("click", () => {
   trackEvent("store_card_opened", {
     material_name: product || null,
     store_name: place.name || null,
@@ -851,13 +851,6 @@ function toggleStoreActionPanel(card, place, product, location, kmText, minuteTe
   toggleStoreActionPanel(div, place, product, location, kmText, minuteText);
 });
 
-  const searchUrl = createStoreSearchUrl(
-    place.name || "",
-    product || ""
-  );
-
-  window.open(searchUrl, "_blank", "noopener,noreferrer");
-});
 resultsEl.appendChild(div);
 });
 
