@@ -673,5 +673,14 @@ document.getElementById("sortPriceButton").addEventListener("click", () => {
   <script src="materials-database.js"></script>
   <script src="generate-prices.js"></script>
   <script src="product-compare.js"></script>
+<script>
+  const SUPABASE_URL = "https://dwvzcwjfbernlcshkiwg.supabase.coL";
+  const SUPABASE_ANON_KEY = "sb_publishable_-LwvSOfJYCHvY4aS7u8cKA_KRnxvYD8";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+</script>
 </body>
 </html>
