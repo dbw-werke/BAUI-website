@@ -746,6 +746,8 @@ function createStoreSearchUrl(storeName, productInput) {
 
   window.open(searchUrl, "_blank", "noopener,noreferrer");
 });
+resultsEl.appendChild(div);
+});
 
         trackEvent("search_results", {
           material_name: product || null,
