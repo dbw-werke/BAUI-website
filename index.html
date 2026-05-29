@@ -625,6 +625,77 @@ function createStoreSearchUrl(storeName, productInput) {
 
   return template.replace("{query}", query);
 }
+ function createRouteUrl(originAddress, destinationAddress) {
+  return (
+    "https://www.google.com/maps/dir/?api=1" +
+    `&origin=${encodeURIComponent(originAddress || "")}` +
+    `&destination=${encodeURIComponent(destinationAddress || "")}` +
+    "&travelmode=driving"
+  );
+}
+
+function toggleStoreActionPanel(card, place, product, location, kmText, minuteText) {
+  const existingPanel = card.querySelector(".store-action-panel");
+
+  if (existingPanel) {
+    existingPanel.remove();
+    return;
+  }
+
+  document.querySelectorAll(".store-action-panel").forEach(panel => {
+    panel.remove();
+  });
+
+  const panel = document.createElement("div");
+  panel.className = "store-action-panel";
+
+  const storeUrl = createStoreSearchUrl(
+    place.name || "",
+    product || ""
+  );
+
+  const routeUrl = createRouteUrl(
+    location,
+    place.vicinity || place.name || ""
+  );
+
+  panel.innerHTML = `
+    <div class="store-action-title">
+      ${escapeHtml(place.name || "Baumarkt")}
+    </div>
+
+    <div class="store-action-text">
+      Produkt: ${escapeHtml(product || "nicht angegeben")}<br>
+      Adresse: ${escapeHtml(place.vicinity || "Adresse nicht verfügbar")}<br>
+      Entfernung: ${escapeHtml(kmText)} · Fahrzeit: ${escapeHtml(minuteText)}
+    </div>
+
+    <div class="store-action-buttons">
+      <button class="store-button" type="button">
+        Im Store schauen
+      </button>
+
+      <button class="route-button" type="button">
+        Route öffnen
+      </button>
+    </div>
+  `;
+
+  panel.querySelector(".store-button").addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    window.open(storeUrl, "_blank", "noopener,noreferrer");
+  });
+
+  panel.querySelector(".route-button").addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    window.open(routeUrl, "_blank", "noopener,noreferrer");
+  });
+
+  card.querySelector(".result-left").appendChild(panel);
+}
+   
     async function search() {
       const location = document.getElementById("locationInput").value.trim();
       const product = document.getElementById("productInput").value.trim();
@@ -770,12 +841,15 @@ function createStoreSearchUrl(storeName, productInput) {
             </div>
           `;
 
-       div.addEventListener("click", () => {
-  trackEvent("store_click", {
+    div.addEventListener("click", () => {
+  trackEvent("store_card_opened", {
     material_name: product || null,
     store_name: place.name || null,
     postal_area: anonymizePostalCode(location)
   });
+
+  toggleStoreActionPanel(div, place, product, location, kmText, minuteText);
+});
 
   const searchUrl = createStoreSearchUrl(
     place.name || "",
