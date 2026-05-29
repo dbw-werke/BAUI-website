@@ -2,14 +2,14 @@
 <html lang="de">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-H7J9PZH18D"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H7J9PZH18D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-H7J9PZH18D");
+  </script>
 
-  gtag('config', 'G-H7J9PZH18D');
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baumarkt Finder</title>
@@ -27,9 +27,7 @@
       --white: #ffffff;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: Arial, sans-serif;
@@ -75,9 +73,7 @@
       outline: none;
     }
 
-    input::placeholder {
-      color: #a9a9a9;
-    }
+    input::placeholder { color: #a9a9a9; }
 
     input:focus {
       border-color: var(--red);
@@ -121,57 +117,58 @@
       gap: 14px;
     }
 
-   .result-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  gap: 20px;
-  padding: 18px 20px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--panel-2);
-  min-height: 180px;
-}
+    .result-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 20px;
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel-2);
+      min-height: 180px;
+      cursor: pointer;
+    }
 
-.result-content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: flex-start;
-}
+    .result-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: flex-start;
+    }
 
-.result-left {
-  flex: 1;
-  min-width: 0;
-}
+    .result-left {
+      flex: 1;
+      min-width: 0;
+    }
 
-.result-logo-slot {
-  width: 180px;
-  min-width: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    .result-logo-slot {
+      width: 180px;
+      min-width: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.store-logo {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
-  display: block;
-}
+    .store-logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      display: block;
+    }
 
-.store-logo-fallback {
-  width: 120px;
-  height: 120px;
-  border-radius: 16px;
-  border: 1px solid #6a6a6a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 38px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #d8d8d8;
-}
+    .store-logo-fallback {
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
+      border: 1px solid #6a6a6a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #d8d8d8;
+    }
 
     .result-name {
       font-size: 19px;
@@ -222,85 +219,142 @@
       overflow: hidden;
     }
 
- @media (max-width: 900px) {
-  .result-card {
-    flex-direction: column;
-    min-height: auto;
-  }
+    .price-box {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #1f8f47;
+      background: #e8f8ee;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
 
-  .result-logo-slot {
-    width: 100%;
-    min-width: 100%;
-    justify-content: flex-start;
-    padding-top: 4px;
-  }
+    #sortPriceButton {
+      display: none;
+      margin-top: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 10px;
+      border: 1px solid #2ecc71;
+      background: rgba(46, 204, 113, 0.08);
+      color: #2ecc71;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
 
-  .store-logo,
-  .store-logo-fallback {
-    width: 90px;
-    height: 90px;
-  }
-}
+    #sortPriceButton:hover {
+      background: #2ecc71;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
 
-.price-box {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #1f8f47;
-  background: #e8f8ee;
-  margin-top: 8px;
-}
+    @media (max-width: 900px) {
+      .wrapper {
+        margin: 16px;
+        padding: 20px;
+      }
 
-#sortPriceButton {
-  display: none;
-  margin-top: 10px;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 10px;
-  border: 1px solid #2ecc71;
-  background: rgba(46, 204, 113, 0.08);
-  color: #2ecc71;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
+      .result-card {
+        flex-direction: column;
+        min-height: auto;
+      }
 
-#sortPriceButton:hover {
-  background: #2ecc71;
-  color: #ffffff;
-  transform: translateY(-1px);
-}
+      .result-logo-slot {
+        width: 100%;
+        min-width: 100%;
+        justify-content: flex-start;
+        padding-top: 4px;
+      }
+
+      .store-logo,
+      .store-logo-fallback {
+        width: 90px;
+        height: 90px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="wrapper">
     <h1>Baumarkt Finder</h1>
 
     <form id="searchForm" class="form-group">
-     <input
-  id="locationInput"
-  type="text"
-  placeholder="Straße oder Adresse in Deutschland eingeben..."
-  autocomplete="off"
-/>
+      <input
+        id="locationInput"
+        type="text"
+        placeholder="Straße oder Adresse in Deutschland eingeben..."
+        autocomplete="off"
+      />
 
-<input
-  id="productInput"
-  type="text"
-  placeholder="Produkt oder Material eingeben, z. B. Rigips, Zement, Schrauben..."
-/>
+      <input
+        id="productInput"
+        type="text"
+        placeholder="Produkt oder Material eingeben, z. B. Rigips, Zement, Schrauben..."
+      />
 
-<div id="productSuggestions" class="suggestions-box"></div>
-<button id="searchButton" type="submit">Suchen</button>
-<button id="sortPriceButton" type="button">Nach Preis sortieren</button>
+      <div id="productSuggestions" class="suggestions-box"></div>
+
+      <button id="searchButton" type="submit">Suchen</button>
+      <button id="sortPriceButton" type="button">Nach Preis sortieren</button>
     </form>
 
     <div id="status">Bereit</div>
     <div id="results"></div>
     <div id="map"></div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL = "https://dwvzcwjfbernlcshkiwg.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_-LwvSOfJYCHvY4aS7u8cKA_KRnxvYD8";
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    function anonymizePostalCode(text) {
+      const match = String(text || "").match(/\b\d{5}\b/);
+      return match ? `${match[0].slice(0, 2)}xxx` : null;
+    }
+
+    async function trackSupabaseEvent(eventName, data = {}) {
+      try {
+        const { error } = await supabaseClient
+          .from("analytics_events")
+          .insert({
+            event_name: eventName,
+            material_name: data.material_name || null,
+            postal_area: data.postal_area || null,
+            store_name: data.store_name || null,
+            results_count: data.results_count ?? null,
+            page_path: window.location.pathname
+          });
+
+        if (error) {
+          console.error("SUPABASE TRACK ERROR:", error);
+        }
+      } catch (err) {
+        console.error("SUPABASE FATAL ERROR:", err);
+      }
+    }
+
+    function trackGaEvent(eventName, data = {}) {
+      if (typeof gtag === "function") {
+        gtag("event", eventName, data);
+      }
+    }
+
+    function trackEvent(eventName, data = {}) {
+      trackGaEvent(eventName, data);
+      trackSupabaseEvent(eventName, data);
+    }
+  </script>
 
   <script>
     let map;
@@ -380,6 +434,7 @@
               reject(new Error("Adresse nicht gefunden"));
               return;
             }
+
             resolve(results[0]);
           }
         );
@@ -393,6 +448,7 @@
             reject(new Error("Keine Baumärkte gefunden"));
             return;
           }
+
           resolve(results);
         });
       });
@@ -411,102 +467,112 @@
         Math.cos(lat1) * Math.cos(lat2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
       return R * c;
     }
 
     function getDistanceMatrix(origin, destinations) {
-  return new Promise((resolve) => {
-    distanceMatrixService.getDistanceMatrix(
-      {
-        origins: [origin],
-        destinations: destinations,
-        travelMode: google.maps.TravelMode.DRIVING,
-        unitSystem: google.maps.UnitSystem.METRIC,
-        drivingOptions: {
-          departureTime: new Date()
-        }
-      },
-      (response, status) => {
-        if (
-          status !== "OK" ||
-          !response ||
-          !response.rows ||
-          !response.rows[0] ||
-          !response.rows[0].elements
-        ) {
-          resolve(null);
-          return;
-        }
+      return new Promise((resolve) => {
+        distanceMatrixService.getDistanceMatrix(
+          {
+            origins: [origin],
+            destinations: destinations,
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.METRIC,
+            drivingOptions: {
+              departureTime: new Date()
+            }
+          },
+          (response, status) => {
+            if (
+              status !== "OK" ||
+              !response ||
+              !response.rows ||
+              !response.rows[0] ||
+              !response.rows[0].elements
+            ) {
+              resolve(null);
+              return;
+            }
 
-        resolve(response.rows[0].elements);
+            resolve(response.rows[0].elements);
+          }
+        );
+      });
+    }
+
+    function formatKmFromMeters(meters) {
+      return (meters / 1000).toFixed(1).replace(".", ",");
+    }
+
+    function getPriceFromCard(card) {
+      const priceEl = card.querySelector(".price-box");
+
+      if (!priceEl) return 999999;
+
+      const text = priceEl.textContent || "";
+      const match = text.match(/(\d+[.,]\d+)/);
+
+      if (!match) return 999999;
+
+      return parseFloat(match[1].replace(",", "."));
+    }
+
+    function getStoreLogoByName(storeName) {
+      const name = (storeName || "").toLowerCase();
+
+      if (name.includes("obi")) return "imagesobi.jpg";
+      if (name.includes("hornbach")) return "imageshornbach.png";
+      if (name.includes("bauhaus")) return "bauhaus.png";
+      if (name.includes("toom")) return "toom.webp";
+      if (name.includes("hagebau")) return "hagebau.jpg";
+      if (name.includes("baywa")) return "baywa.png";
+      if (name.includes("würth") || name.includes("wuerth")) return "würth.png";
+      if (name.includes("raab")) return "raabkarcher.png";
+      if (name.includes("späth") || name.includes("spaeth")) return "späthknoll.jpg";
+
+      return null;
+    }
+
+    function createStoreLogoHtml(storeName) {
+      const logoPath = getStoreLogoByName(storeName);
+
+      if (logoPath) {
+        return `
+          <img
+            class="store-logo"
+            src="${logoPath}"
+            alt="${escapeHtml(storeName)} Logo"
+            onerror="this.outerHTML='<div class=&quot;store-logo-fallback&quot;>🏬</div>'"
+          />
+        `;
       }
-    );
-  });
-}
 
-   function formatKmFromMeters(meters) {
-  return (meters / 1000).toFixed(1).replace(".", ",");
-}
+      return `<div class="store-logo-fallback">🏬</div>`;
+    }
 
-function getPriceFromCard(card) {
-  const priceEl = card.querySelector(".price-box");
-  if (!priceEl) return 999999;
-
-  const text = priceEl.textContent || "";
-  const match = text.match(/(\d+[.,]\d+)/);
-
-  if (!match) return 999999;
-
-  return parseFloat(match[1].replace(",", "."));
-}
-function getStoreLogoByName(storeName) {
-  const name = (storeName || "").toLowerCase();
-
-  if (name.includes("obi")) return "imagesobi.jpg";
-  if (name.includes("hornbach")) return "imageshornbach.png";
-  if (name.includes("bauhaus")) return "bauhaus.png";
-  if (name.includes("toom")) return "toom.webp";
-  if (name.includes("hagebau")) return "hagebau.jpg";
-  if (name.includes("baywa")) return "baywa.png";
-  if (name.includes("würth") || name.includes("wuerth")) return "würth.png";
-  if (name.includes("raab")) return "raabkarcher.png";
-  if (name.includes("späth") || name.includes("spaeth")) return "späthknoll.jpg";
-
-  return null;
-}
-
-function createStoreLogoHtml(storeName) {
-  const logoPath = getStoreLogoByName(storeName);
-
-  if (logoPath) {
-    return `
-      <img
-        class="store-logo"
-        src="${logoPath}"
-        alt="${escapeHtml(storeName)} Logo"
-        onerror="this.outerHTML='<div class=&quot;store-logo-fallback&quot;>🏬</div>'"
-      />
-    `;
-  }
-
-  return `<div class="store-logo-fallback">🏬</div>`;
-}
     async function search() {
       const location = document.getElementById("locationInput").value.trim();
       const product = document.getElementById("productInput").value.trim();
       const resultsEl = document.getElementById("results");
       const statusEl = document.getElementById("status");
       const searchButton = document.getElementById("searchButton");
+      const sortPriceButton = document.getElementById("sortPriceButton");
 
       if (!location) {
         alert("Bitte eine Adresse eingeben");
         return;
       }
 
+      trackEvent("search_started", {
+        material_name: product || null,
+        postal_area: anonymizePostalCode(location)
+      });
+
       statusEl.innerText = "Suche Baumärkte in Ihrer Nähe...";
-resultsEl.innerHTML = "";
-document.getElementById("sortPriceButton").style.display = "none";
-searchButton.disabled = true;
+      resultsEl.innerHTML = "";
+      sortPriceButton.style.display = "none";
+      searchButton.disabled = true;
 
       try {
         let origin;
@@ -543,54 +609,60 @@ searchButton.disabled = true;
           }))
           .sort((a, b) => a.airDistanceKm - b.airDistanceKm)
           .slice(0, 10);
-if (filteredPlaces.length === 0) {
-  statusEl.innerText = "Keine passenden Baumärkte gefunden";
-  document.getElementById("sortPriceButton").style.display = "none";
-  searchButton.disabled = false;
-  return;
-}
 
-const destinations = filteredPlaces.map(place => place.geometry.location);
-const matrixElements = await getDistanceMatrix(origin, destinations);
+        if (filteredPlaces.length === 0) {
+          trackEvent("search_no_results", {
+            material_name: product || null,
+            postal_area: anonymizePostalCode(location)
+          });
 
-const enrichedPlaces = filteredPlaces
-  .map((place, index) => {
-    const fallbackDistanceMeters = Math.round(place.airDistanceKm * 1000);
+          statusEl.innerText = "Keine passenden Baumärkte gefunden";
+          sortPriceButton.style.display = "none";
+          searchButton.disabled = false;
+          return;
+        }
 
-    if (!matrixElements) {
-      return {
-        ...place,
-        distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
-        distanceMeters: fallbackDistanceMeters,
-        durationText: "nicht verfügbar",
-        durationMinutes: null
-      };
-    }
+        const destinations = filteredPlaces.map(place => place.geometry.location);
+        const matrixElements = await getDistanceMatrix(origin, destinations);
 
-    const routeInfo = matrixElements[index];
+        const enrichedPlaces = filteredPlaces
+          .map((place, index) => {
+            const fallbackDistanceMeters = Math.round(place.airDistanceKm * 1000);
 
-    if (!routeInfo || routeInfo.status !== "OK") {
-      return {
-        ...place,
-        distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
-        distanceMeters: fallbackDistanceMeters,
-        durationText: "nicht verfügbar",
-        durationMinutes: null
-      };
-    }
+            if (!matrixElements) {
+              return {
+                ...place,
+                distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+                distanceMeters: fallbackDistanceMeters,
+                durationText: "nicht verfügbar",
+                durationMinutes: null
+              };
+            }
 
-    const distanceMeters = routeInfo.distance?.value ?? fallbackDistanceMeters;
-    const durationSeconds = routeInfo.duration?.value ?? null;
+            const routeInfo = matrixElements[index];
 
-    return {
-      ...place,
-      distanceText: routeInfo.distance?.text || `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
-      distanceMeters,
-      durationText: routeInfo.duration?.text || "nicht verfügbar",
-      durationMinutes: durationSeconds ? Math.round(durationSeconds / 60) : null
-    };
-  })
-  .sort((a, b) => a.distanceMeters - b.distanceMeters);
+            if (!routeInfo || routeInfo.status !== "OK") {
+              return {
+                ...place,
+                distanceText: `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+                distanceMeters: fallbackDistanceMeters,
+                durationText: "nicht verfügbar",
+                durationMinutes: null
+              };
+            }
+
+            const distanceMeters = routeInfo.distance?.value ?? fallbackDistanceMeters;
+            const durationSeconds = routeInfo.duration?.value ?? null;
+
+            return {
+              ...place,
+              distanceText: routeInfo.distance?.text || `${place.airDistanceKm.toFixed(1).replace(".", ",")} km`,
+              distanceMeters,
+              durationText: routeInfo.duration?.text || "nicht verfügbar",
+              durationMinutes: durationSeconds ? Math.round(durationSeconds / 60) : null
+            };
+          })
+          .sort((a, b) => a.distanceMeters - b.distanceMeters);
 
         resultsEl.innerHTML = "";
 
@@ -605,35 +677,57 @@ const enrichedPlaces = filteredPlaces
 
           const div = document.createElement("div");
           div.className = "result-card";
-          div.innerHTML = `
-  <div class="result-content">
-    <div class="result-left">
-      <div class="result-name">${escapeHtml(place.name || "Unbekannter Baumarkt")}</div>
-      <div class="result-address">${escapeHtml(place.vicinity || "Adresse nicht verfügbar")}</div>
-      <div class="result-product">Produkt: ${escapeHtml(product || "nicht angegeben")}</div>
-      <div class="result-meta">
-        <span class="distance-km">Entfernung: ${escapeHtml(kmText)}</span>
-        <span class="time-min">Fahrzeit: ${escapeHtml(minuteText)}</span>
-      </div>
-    </div>
-  </div>
 
-  <div class="result-logo-slot">
-    ${createStoreLogoHtml(place.name || "Baumarkt")}
-  </div>
-`;
+          div.innerHTML = `
+            <div class="result-content">
+              <div class="result-left">
+                <div class="result-name">${escapeHtml(place.name || "Unbekannter Baumarkt")}</div>
+                <div class="result-address">${escapeHtml(place.vicinity || "Adresse nicht verfügbar")}</div>
+                <div class="result-product">Produkt: ${escapeHtml(product || "nicht angegeben")}</div>
+                <div class="result-meta">
+                  <span class="distance-km">Entfernung: ${escapeHtml(kmText)}</span>
+                  <span class="time-min">Fahrzeit: ${escapeHtml(minuteText)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-logo-slot">
+              ${createStoreLogoHtml(place.name || "Baumarkt")}
+            </div>
+          `;
+
+          div.addEventListener("click", () => {
+            trackEvent("store_click", {
+              material_name: product || null,
+              store_name: place.name || null,
+              postal_area: anonymizePostalCode(location)
+            });
+          });
+
           resultsEl.appendChild(div);
         });
 
-  if (matrixElements) {
-  statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden`;
-} else {
-  statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden – Fahrzeit derzeit nicht verfügbar`;
-}
+        trackEvent("search_results", {
+          material_name: product || null,
+          postal_area: anonymizePostalCode(location),
+          results_count: enrichedPlaces.length
+        });
 
-document.getElementById("sortPriceButton").style.display = "block";
+        if (matrixElements) {
+          statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden`;
+        } else {
+          statusEl.innerText = `${enrichedPlaces.length} nächstgelegene Baumärkte gefunden – Fahrzeit derzeit nicht verfügbar`;
+        }
+
+        sortPriceButton.style.display = "block";
       } catch (error) {
         console.error(error);
+
+        trackEvent("search_error", {
+          material_name: product || null,
+          postal_area: anonymizePostalCode(location)
+        });
+
         statusEl.innerText = error.message || "Fehler bei der Suche";
       } finally {
         searchButton.disabled = false;
@@ -649,52 +743,31 @@ document.getElementById("sortPriceButton").style.display = "block";
         .replace(/'/g, "&#039;");
     }
 
-       window.initMap = initMap;
+    window.initMap = initMap;
 
-document.getElementById("sortPriceButton").addEventListener("click", () => {
-  const container = document.getElementById("results");
-  const cards = Array.from(container.querySelectorAll(".result-card"));
+    document.getElementById("sortPriceButton").addEventListener("click", () => {
+      const container = document.getElementById("results");
+      const cards = Array.from(container.querySelectorAll(".result-card"));
 
-  cards.sort((a, b) => {
-    return getPriceFromCard(a) - getPriceFromCard(b);
-  });
+      cards.sort((a, b) => {
+        return getPriceFromCard(a) - getPriceFromCard(b);
+      });
 
-  container.innerHTML = "";
-  cards.forEach(card => container.appendChild(card));
-});
+      container.innerHTML = "";
+      cards.forEach(card => container.appendChild(card));
+
+      trackEvent("sort_by_price_clicked", {});
+    });
   </script>
 
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7RCu62ICAEdQkKOPdmueVaqpW6BFhM-M&libraries=places&callback=initMap"
     async
-    defer
-  ></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    defer>
+  </script>
+
   <script src="materials-database.js"></script>
   <script src="generate-prices.js"></script>
   <script src="product-compare.js"></script>
-<script>
-  const SUPABASE_URL = "https://dwvzcwjfbernlcshkiwg.supabase.coL";
-  const SUPABASE_ANON_KEY = "sb_publishable_-LwvSOfJYCHvY4aS7u8cKA_KRnxvYD8";
-
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-  
-  async function testSupabase() {
-    const { data, error } = await supabaseClient
-      .from("analytics_events")
-      .insert({
-        event_name: "test_connection",
-        material_name: "test"
-      });
-
-    console.log("SUPABASE DATA:", data);
-    console.log("SUPABASE ERROR:", error);
-  }
-
-  testSupabase();
-</script>
 </body>
 </html>
