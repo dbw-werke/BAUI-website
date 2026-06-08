@@ -96,4 +96,71 @@ div.innerHTML = `${match.label}: ${Number(match.price).toFixed(2).replace(".", "
   }
 
   document.addEventListener("DOMContentLoaded", init);
+
+  const productInput = document.getElementById("productInput");
+const suggestionsBox = document.getElementById("materialSuggestions");
+
+function getMaterialSuggestions(query) {
+  const q = normalize(query);
+
+  if (!q || q.length < 2) return [];
+
+  return MATERIALS_DB.filter(material => {
+    if (normalize(material.name).includes(q)) {
+      return true;
+    }
+
+    if (Array.isArray(material.aliases)) {
+      return material.aliases.some(alias =>
+        normalize(alias).includes(q)
+      );
+    }
+
+    return false;
+  }).slice(0, 6);
+}
+
+function renderSuggestions(query) {
+  if (!suggestionsBox) return;
+
+  const suggestions = getMaterialSuggestions(query);
+
+  suggestionsBox.innerHTML = "";
+
+  if (!suggestions.length) {
+    suggestionsBox.classList.remove("active");
+    return;
+  }
+
+  suggestions.forEach(material => {
+    const item = document.createElement("button");
+
+    item.type = "button";
+    item.className = "suggestion-item";
+    item.innerHTML = material.name;
+
+    item.addEventListener("click", () => {
+      productInput.value = material.name;
+
+      suggestionsBox.innerHTML = "";
+      suggestionsBox.classList.remove("active");
+    });
+
+    suggestionsBox.appendChild(item);
+  });
+
+  suggestionsBox.classList.add("active");
+}
+
+if (productInput) {
+  productInput.addEventListener("input", e => {
+    renderSuggestions(e.target.value);
+  });
+
+  productInput.addEventListener("blur", () => {
+    setTimeout(() => {
+      suggestionsBox.classList.remove("active");
+    }, 150);
+  });
+}
 })();
