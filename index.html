@@ -288,7 +288,32 @@
       color: #ffffff;
       transform: translateY(-1px);
     }
+.suggestions-box {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
 
+.suggestions-box.active {
+  display: flex;
+}
+
+.suggestion-item {
+  background: #2b2b2b;
+  color: #ffffff;
+  border: 1px solid #5a5a5a;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.suggestion-item:hover {
+  background: #e53935;
+}
     @media (max-width: 900px) {
       .wrapper {
         margin: 16px;
@@ -333,8 +358,8 @@
         type="text"
         placeholder="Produkt oder Material eingeben, z. B. Rigips, Zement, Schrauben..."
       />
-
-      <div id="productSuggestions" class="suggestions-box"></div>
+<div id="materialSuggestions" class="suggestions-box"></div>
+  
 
       <button id="searchButton" type="submit">Suchen</button>
       <button id="sortPriceButton" type="button">Nach Preis sortieren</button>
