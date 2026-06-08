@@ -18,18 +18,37 @@
 
     if (typeof MATERIAL_ALIASES !== "undefined") {
       for (const [alias, target] of Object.entries(MATERIAL_ALIASES)) {
-        if (normalize(alias) === q) {
+        if (
+          normalize(alias) === q ||
+          normalize(alias).includes(q) ||
+          q.includes(normalize(alias))
+        ) {
           return target;
         }
       }
     }
 
-    const direct = MATERIALS_DB.find(
-      item =>
-        normalize(item.name) === q ||
-        normalize(item.name).includes(q) ||
-        q.includes(normalize(item.name))
-    );
+    const direct = MATERIALS_DB.find(item => {
+      const materialName = normalize(item.name);
+
+      const nameMatch =
+        materialName === q ||
+        materialName.includes(q) ||
+        q.includes(materialName);
+
+      const aliasMatch = Array.isArray(item.aliases)
+        ? item.aliases.some(alias => {
+            const normalizedAlias = normalize(alias);
+            return (
+              normalizedAlias === q ||
+              normalizedAlias.includes(q) ||
+              q.includes(normalizedAlias)
+            );
+          })
+        : false;
+
+      return nameMatch || aliasMatch;
+    });
 
     return direct ? direct.name : null;
   }
@@ -39,9 +58,11 @@
 
     if (!resolvedName) return null;
 
-    return MATERIALS_DB.find(
-      item => normalize(item.name) === normalize(resolvedName)
-    ) || null;
+    return (
+      MATERIALS_DB.find(
+        item => normalize(item.name) === normalize(resolvedName)
+      ) || null
+    );
   }
 
   function applyPrices() {
@@ -77,90 +98,85 @@
       div.className = "price-box";
 
       if (match && match.available) {
-div.innerHTML = `${match.label}: ${Number(match.price).toFixed(2).replace(".", ",")} €`;
+        div.innerHTML = `${match.label}: ${Number(match.price)
+          .toFixed(2)
+          .replace(".", ",")} €`;
       } else {
-        div.innerHTML = `Preis: nicht verfügbar`;
+        div.innerHTML = "Preis: nicht verfügbar";
       }
 
       left.appendChild(div);
     });
   }
 
+  function getMaterialSuggestions(query) {
+    const q = normalize(query);
+
+    if (!q || q.length < 2) return [];
+
+    return MATERIALS_DB.filter(material => {
+      const nameMatch = normalize(material.name).includes(q);
+
+      const aliasMatch = Array.isArray(material.aliases)
+        ? material.aliases.some(alias => normalize(alias).includes(q))
+        : false;
+
+      return nameMatch || aliasMatch;
+    }).slice(0, 6);
+  }
+
+  function renderSuggestions(query, productInput, suggestionsBox) {
+    const suggestions = getMaterialSuggestions(query);
+
+    suggestionsBox.innerHTML = "";
+
+    if (!suggestions.length) {
+      suggestionsBox.classList.remove("active");
+      return;
+    }
+
+    suggestions.forEach(material => {
+      const item = document.createElement("button");
+
+      item.type = "button";
+      item.className = "suggestion-item";
+      item.textContent = material.name;
+
+      item.addEventListener("click", () => {
+        productInput.value = material.name;
+        suggestionsBox.innerHTML = "";
+        suggestionsBox.classList.remove("active");
+      });
+
+      suggestionsBox.appendChild(item);
+    });
+
+    suggestionsBox.classList.add("active");
+  }
+
   function init() {
     const form = document.getElementById("searchForm");
-    if (!form) return;
+    const productInput = document.getElementById("productInput");
+    const suggestionsBox = document.getElementById("materialSuggestions");
 
-    form.addEventListener("submit", () => {
-      setTimeout(applyPrices, 900);
-    });
+    if (form) {
+      form.addEventListener("submit", () => {
+        setTimeout(applyPrices, 900);
+      });
+    }
+
+    if (productInput && suggestionsBox) {
+      productInput.addEventListener("input", event => {
+        renderSuggestions(event.target.value, productInput, suggestionsBox);
+      });
+
+      productInput.addEventListener("blur", () => {
+        setTimeout(() => {
+          suggestionsBox.classList.remove("active");
+        }, 150);
+      });
+    }
   }
 
   document.addEventListener("DOMContentLoaded", init);
-
-  const productInput = document.getElementById("productInput");
-const suggestionsBox = document.getElementById("materialSuggestions");
-
-function getMaterialSuggestions(query) {
-  const q = normalize(query);
-
-  if (!q || q.length < 2) return [];
-
-  return MATERIALS_DB.filter(material => {
-    if (normalize(material.name).includes(q)) {
-      return true;
-    }
-
-    if (Array.isArray(material.aliases)) {
-      return material.aliases.some(alias =>
-        normalize(alias).includes(q)
-      );
-    }
-
-    return false;
-  }).slice(0, 6);
-}
-
-function renderSuggestions(query) {
-  if (!suggestionsBox) return;
-
-  const suggestions = getMaterialSuggestions(query);
-
-  suggestionsBox.innerHTML = "";
-
-  if (!suggestions.length) {
-    suggestionsBox.classList.remove("active");
-    return;
-  }
-
-  suggestions.forEach(material => {
-    const item = document.createElement("button");
-
-    item.type = "button";
-    item.className = "suggestion-item";
-    item.innerHTML = material.name;
-
-    item.addEventListener("click", () => {
-      productInput.value = material.name;
-
-      suggestionsBox.innerHTML = "";
-      suggestionsBox.classList.remove("active");
-    });
-
-    suggestionsBox.appendChild(item);
-  });
-
-  suggestionsBox.classList.add("active");
-}
-
-if (productInput) {
-  productInput.addEventListener("input", e => {
-    renderSuggestions(e.target.value);
-  });
-
-  productInput.addEventListener("blur", () => {
-    setTimeout(() => {
-      suggestionsBox.classList.remove("active");
-    }, 150);
-  });
-}
 })();
