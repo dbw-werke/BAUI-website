@@ -77,7 +77,7 @@
       div.className = "price-box";
 
       if (match && match.available) {
-       div.innerHTML = `${match.label}: ${Number(match.price).toFixed(2).replace(".", ",")} €`;
+div.innerHTML = `${match.label}: ${Number(match.price).toFixed(2).replace(".", ",")} €`;
       } else {
         div.innerHTML = `Preis: nicht verfügbar`;
       }
