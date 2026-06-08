@@ -1,218 +1,299 @@
+const STORE_TEMPLATE = {
+  estimated_price: null,
+  official_price: null,
+  availability_status: "unknown",
+  stock_quantity: null,
+  data_source: "manual_estimate",
+  product_url: null,
+  last_updated: null
+};
+
+function price(estimatedPrice) {
+  return {
+    ...STORE_TEMPLATE,
+    estimated_price: estimatedPrice
+  };
+}
+
 const MATERIALS_DB = [
   {
+    material_id: "knauf_uniflott_25kg",
     name: "Knauf Uniflott 25kg",
     category: "Trockenbau",
+    unit: "Sack",
+    aliases: [
+      "uniflott", "uniflot", "uniflott sack", "spachtel", "spachtelmasse",
+      "fugenfueller", "fugenfüller", "fugenspachtel", "knauf spachtel",
+      "trockenbau spachtel", "gips spachtel"
+    ],
     storePrices: {
-      OBI: 18.39,
-      Hornbach: 17.19,
-      Bauhaus: 17.89,
-      toom: 18.79,
-      hagebau: 18.09,
-      BayWa: 17.99,
-      "Würth": 19.49,
-      "Raab Karcher": 18.29,
-      "Späth": 17.99,
-      "Späth-Knoll": 18.49
+      OBI: price(18.39),
+      Hornbach: price(17.19),
+      Bauhaus: price(17.89),
+      toom: price(18.79),
+      hagebau: price(18.09),
+      BayWa: price(17.99),
+      "Würth": price(19.49),
+      "Raab Karcher": price(18.29),
+      "Späth": price(17.99),
+      "Späth-Knoll": price(18.49)
     }
   },
   {
+    material_id: "knauf_uniflott_finish",
     name: "Knauf Uniflott Finish",
     category: "Trockenbau",
+    unit: "Eimer",
+    aliases: [
+      "uniflott finish", "finish", "fertigspachtel", "feinspachtel",
+      "knauf finish", "spachtel fertig", "fugenfinish"
+    ],
     storePrices: {
-      OBI: 12.59,
-      Hornbach: 11.79,
-      Bauhaus: 12.19,
-      toom: 12.89,
-      hagebau: 12.49,
-      BayWa: 12.29,
-      "Würth": 13.29,
-      "Raab Karcher": 12.69,
-      "Späth": 12.19,
-      "Späth-Knoll": 12.79
+      OBI: price(12.59),
+      Hornbach: price(11.79),
+      Bauhaus: price(12.19),
+      toom: price(12.89),
+      hagebau: price(12.49),
+      BayWa: price(12.29),
+      "Würth": price(13.29),
+      "Raab Karcher": price(12.69),
+      "Späth": price(12.19),
+      "Späth-Knoll": price(12.79)
     }
   },
   {
+    material_id: "rigips_vario_fugenspachtel",
     name: "Rigips VARIO Fugenspachtel",
     category: "Trockenbau",
+    unit: "Sack",
+    aliases: [
+      "vario", "rigips vario", "fugenspachtel", "fugen spachtel",
+      "spachtel rigips", "platten spachtel", "fugenmasse"
+    ],
     storePrices: {
-      OBI: 15.29,
-      Hornbach: 14.19,
-      Bauhaus: 14.79,
-      toom: 15.59,
-      hagebau: 15.09,
-      BayWa: 14.89,
-      "Würth": 16.19,
-      "Raab Karcher": 15.19,
-      "Späth": 14.99,
-      "Späth-Knoll": 15.39
+      OBI: price(15.29),
+      Hornbach: price(14.19),
+      Bauhaus: price(14.79),
+      toom: price(15.59),
+      hagebau: price(15.09),
+      BayWa: price(14.89),
+      "Würth": price(16.19),
+      "Raab Karcher": price(15.19),
+      "Späth": price(14.99),
+      "Späth-Knoll": price(15.39)
     }
   },
   {
+    material_id: "rigips_bauplatte_12_5mm",
     name: "Rigips Bauplatte 12.5mm",
     category: "Trockenbau",
+    unit: "Platte",
+    aliases: [
+      "rigips", "regips", "rigibs", "rigipsplatte", "regipsplatte",
+      "gipsplatte", "bauplatte", "trockenbauplatte", "platte",
+      "weisse platte", "weiße platte"
+    ],
     storePrices: {
-      OBI: 10.49,
-      Hornbach: 9.69,
-      Bauhaus: 10.09,
-      toom: 10.79,
-      hagebau: 10.29,
-      BayWa: 10.19,
-      "Würth": 11.29,
-      "Raab Karcher": 10.39,
-      "Späth": 9.99,
-      "Späth-Knoll": 10.59
+      OBI: price(10.49),
+      Hornbach: price(9.69),
+      Bauhaus: price(10.09),
+      toom: price(10.79),
+      hagebau: price(10.29),
+      BayWa: price(10.19),
+      "Würth": price(11.29),
+      "Raab Karcher": price(10.39),
+      "Späth": price(9.99),
+      "Späth-Knoll": price(10.59)
     }
   },
   {
+    material_id: "knauf_gipskartonplatte_12_5mm",
     name: "Knauf Gipskartonplatte 12.5mm",
     category: "Trockenbau",
+    unit: "Platte",
+    aliases: [
+      "gipskarton", "gipskartonplatte", "knauf platte",
+      "knauf gipsplatte", "kartonplatte", "trockenbauplatte knauf"
+    ],
     storePrices: {
-      OBI: 10.99,
-      Hornbach: 10.19,
-      Bauhaus: 10.59,
-      toom: 11.29,
-      hagebau: 10.79,
-      BayWa: 10.69,
-      "Würth": 11.79,
-      "Raab Karcher": 10.89,
-      "Späth": 10.49,
-      "Späth-Knoll": 11.09
+      OBI: price(10.99),
+      Hornbach: price(10.19),
+      Bauhaus: price(10.59),
+      toom: price(11.29),
+      hagebau: price(10.79),
+      BayWa: price(10.69),
+      "Würth": price(11.79),
+      "Raab Karcher": price(10.89),
+      "Späth": price(10.49),
+      "Späth-Knoll": price(11.09)
     }
   },
   {
+    material_id: "feuchtraumplatte_12_5mm",
     name: "Feuchtraumplatte 12.5mm",
     category: "Trockenbau",
+    unit: "Platte",
+    aliases: [
+      "feuchtraumplatte", "feuchtplatte", "grüne platte", "gruene platte",
+      "bad platte", "badplatte", "imprägnierte platte", "impraegnierte platte",
+      "grüne rigips", "gruene rigips", "grüne gipsplatte"
+    ],
     storePrices: {
-      OBI: 12.99,
-      Hornbach: 12.19,
-      Bauhaus: 12.59,
-      toom: 13.39,
-      hagebau: 12.89,
-      BayWa: 12.79,
-      "Würth": 13.99,
-      "Raab Karcher": 12.99,
-      "Späth": 12.49,
-      "Späth-Knoll": 13.09
+      OBI: price(12.99),
+      Hornbach: price(12.19),
+      Bauhaus: price(12.59),
+      toom: price(13.39),
+      hagebau: price(12.89),
+      BayWa: price(12.79),
+      "Würth": price(13.99),
+      "Raab Karcher": price(12.99),
+      "Späth": price(12.49),
+      "Späth-Knoll": price(13.09)
     }
   },
   {
+    material_id: "brandschutzplatte_12_5mm",
     name: "Brandschutzplatte 12.5mm",
     category: "Trockenbau",
+    unit: "Platte",
+    aliases: [
+      "brandschutzplatte", "feuerplatte", "rote platte", "feuerschutzplatte",
+      "f90 platte", "rf platte", "brandplatte", "brandschutz rigips"
+    ],
     storePrices: {
-      OBI: 14.49,
-      Hornbach: 13.69,
-      Bauhaus: 14.09,
-      toom: 14.89,
-      hagebau: 14.39,
-      BayWa: 14.19,
-      "Würth": 15.39,
-      "Raab Karcher": 14.49,
-      "Späth": 13.99,
-      "Späth-Knoll": 14.69
+      OBI: price(14.49),
+      Hornbach: price(13.69),
+      Bauhaus: price(14.09),
+      toom: price(14.89),
+      hagebau: price(14.39),
+      BayWa: price(14.19),
+      "Würth": price(15.39),
+      "Raab Karcher": price(14.49),
+      "Späth": price(13.99),
+      "Späth-Knoll": price(14.69)
     }
   },
   {
+    material_id: "cw_profil_50",
     name: "CW Profil 50",
     category: "Trockenbau",
+    unit: "Stück",
+    aliases: [
+      "cw", "cw profil", "cw 50", "ständer", "staender",
+      "ständerprofil", "staenderprofil", "wandprofil", "metallprofil"
+    ],
     storePrices: {
-      OBI: 5.09,
-      Hornbach: 4.59,
-      Bauhaus: 4.89,
-      toom: 5.29,
-      hagebau: 4.99,
-      BayWa: 4.79,
-      "Würth": 5.69,
-      "Raab Karcher": 5.09,
-      "Späth": 4.79,
-      "Späth-Knoll": 5.19
+      OBI: price(5.09),
+      Hornbach: price(4.59),
+      Bauhaus: price(4.89),
+      toom: price(5.29),
+      hagebau: price(4.99),
+      BayWa: price(4.79),
+      "Würth": price(5.69),
+      "Raab Karcher": price(5.09),
+      "Späth": price(4.79),
+      "Späth-Knoll": price(5.19)
     }
   },
   {
+    material_id: "uw_profil_50",
     name: "UW Profil 50",
     category: "Trockenbau",
+    unit: "Stück",
+    aliases: [
+      "uw", "uw profil", "uw 50", "bodenprofil", "deckenprofil",
+      "u profil", "randprofil", "metallprofil u"
+    ],
     storePrices: {
-      OBI: 4.69,
-      Hornbach: 4.19,
-      Bauhaus: 4.49,
-      toom: 4.89,
-      hagebau: 4.59,
-      BayWa: 4.39,
-      "Würth": 5.19,
-      "Raab Karcher": 4.69,
-      "Späth": 4.39,
-      "Späth-Knoll": 4.79
+      OBI: price(4.69),
+      Hornbach: price(4.19),
+      Bauhaus: price(4.49),
+      toom: price(4.89),
+      hagebau: price(4.59),
+      BayWa: price(4.39),
+      "Würth": price(5.19),
+      "Raab Karcher": price(4.69),
+      "Späth": price(4.39),
+      "Späth-Knoll": price(4.79)
     }
   },
   {
+    material_id: "schnellbauschrauben_25mm",
     name: "Schnellbauschrauben 25mm",
     category: "Trockenbau",
+    unit: "Packung",
+    aliases: [
+      "schnellbauschrauben", "schrauben", "rigipsschrauben",
+      "trockenbauschrauben", "gipskartonschrauben", "25mm schrauben",
+      "schwarze schrauben"
+    ],
     storePrices: {
-      OBI: 7.49,
-      Hornbach: 6.79,
-      Bauhaus: 7.09,
-      toom: 7.89,
-      hagebau: 7.39,
-      BayWa: 7.19,
-      "Würth": 8.49,
-      "Raab Karcher": 7.59,
-      "Späth": 7.09,
-      "Späth-Knoll": 7.69
+      OBI: price(7.49),
+      Hornbach: price(6.79),
+      Bauhaus: price(7.09),
+      toom: price(7.89),
+      hagebau: price(7.39),
+      BayWa: price(7.19),
+      "Würth": price(8.49),
+      "Raab Karcher": price(7.59),
+      "Späth": price(7.09),
+      "Späth-Knoll": price(7.69)
     }
   },
   {
+    material_id: "fugendeckstreifen",
     name: "Fugendeckstreifen",
     category: "Trockenbau",
+    unit: "Rolle",
+    aliases: [
+      "fugendeckstreifen", "fugenband", "bewehrungsstreifen",
+      "papierstreifen", "glasfaserstreifen", "fugen streifen",
+      "band für fugen", "band fuer fugen"
+    ],
     storePrices: {
-      OBI: 3.99,
-      Hornbach: 3.29,
-      Bauhaus: 3.59,
-      toom: 4.19,
-      hagebau: 3.89,
-      BayWa: 3.69,
-      "Würth": 4.49,
-      "Raab Karcher": 3.99,
-      "Späth": 3.59,
-      "Späth-Knoll": 4.09
+      OBI: price(3.99),
+      Hornbach: price(3.29),
+      Bauhaus: price(3.59),
+      toom: price(4.19),
+      hagebau: price(3.89),
+      BayWa: price(3.69),
+      "Würth": price(4.49),
+      "Raab Karcher": price(3.99),
+      "Späth": price(3.59),
+      "Späth-Knoll": price(4.09)
     }
   },
   {
+    material_id: "steinwolle_40mm",
     name: "Steinwolle 40mm",
     category: "Trockenbau",
+    unit: "Paket",
+    aliases: [
+      "steinwolle", "dämmung", "daemmung", "wolle", "mineralwolle",
+      "trennwanddämmung", "trennwanddaemmung", "isolierung",
+      "dämmplatte", "daemmplatte", "40mm dämmung"
+    ],
     storePrices: {
-      OBI: 9.59,
-      Hornbach: 8.69,
-      Bauhaus: 9.09,
-      toom: 9.99,
-      hagebau: 9.49,
-      BayWa: 9.19,
-      "Würth": 10.49,
-      "Raab Karcher": 9.59,
-      "Späth": 9.09,
-      "Späth-Knoll": 9.79
+      OBI: price(9.59),
+      Hornbach: price(8.69),
+      Bauhaus: price(9.09),
+      toom: price(9.99),
+      hagebau: price(9.49),
+      BayWa: price(9.19),
+      "Würth": price(10.49),
+      "Raab Karcher": price(9.59),
+      "Späth": price(9.09),
+      "Späth-Knoll": price(9.79)
     }
   }
 ];
 
-const MATERIAL_ALIASES = {
-  uniflott: "Knauf Uniflott 25kg",
-  spachtel: "Knauf Uniflott 25kg",
-  spachtelmasse: "Knauf Uniflott 25kg",
-  fugenspachtel: "Rigips VARIO Fugenspachtel",
-  rigips: "Rigips Bauplatte 12.5mm",
-  regips: "Rigips Bauplatte 12.5mm",
-  rigipsplatte: "Rigips Bauplatte 12.5mm",
-  gipskarton: "Knauf Gipskartonplatte 12.5mm",
-  gipskartonplatte: "Knauf Gipskartonplatte 12.5mm",
-  feuchtraumplatte: "Feuchtraumplatte 12.5mm",
-  brandschutzplatte: "Brandschutzplatte 12.5mm",
-  cw: "CW Profil 50",
-  "cw profil": "CW Profil 50",
-  uw: "UW Profil 50",
-  "uw profil": "UW Profil 50",
-  schnellbauschrauben: "Schnellbauschrauben 25mm",
-  schrauben: "Schnellbauschrauben 25mm",
-  fugendeckstreifen: "Fugendeckstreifen",
-  steinwolle: "Steinwolle 40mm",
-  daemmung: "Steinwolle 40mm",
-  dämmung: "Steinwolle 40mm"
-};
+const MATERIAL_ALIASES = {};
+
+MATERIALS_DB.forEach(material => {
+  material.aliases.forEach(alias => {
+    MATERIAL_ALIASES[alias] = material.name;
+  });
+
+  MATERIAL_ALIASES[material.name.toLowerCase()] = material.name;
+});
