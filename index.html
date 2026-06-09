@@ -663,13 +663,11 @@ const STORE_SEARCH_URLS = {
     `https://www.bauhaus.info/suche/produkte?text=${encodeURIComponent(query)}`,
 
   hornbach: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `site:hornbach.de ${query}`
-    )}`,
+    `https://www.hornbach.de/s/${encodeURIComponent(query)}`,
 
   toom: query =>
     `https://www.google.com/search?q=${encodeURIComponent(
-      `site:toom.de ${query}`
+      `site:toom.de/produkte ${query}`
     )}`,
 
   hagebau: query =>
@@ -696,6 +694,12 @@ const STORE_SEARCH_URLS = {
     `https://www.google.com/search?q=${encodeURIComponent(
       `Späth Baustoffe ${query}`
     )}`,
+
+  spaethknoll: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `Späth-Knoll ${query}`
+    )}`
+};
 
   spaethknoll: query =>
     `https://www.google.com/search?q=${encodeURIComponent(
