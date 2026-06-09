@@ -701,11 +701,6 @@ const STORE_SEARCH_URLS = {
     )}`
 };
 
-  spaethknoll: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `Späth-Knoll ${query}`
-    )}`
-};
 
 function getStoreIdFromName(storeName) {
   const name = String(storeName || "").toLowerCase();
@@ -723,16 +718,13 @@ function getStoreIdFromName(storeName) {
 
 function createStoreSearchUrl(storeName, productInput) {
   const storeId = getStoreIdFromName(storeName);
+  const query = productInput || "";
 
-  const query = encodeURIComponent(productInput || "");
-
-  const template = STORE_SEARCH_URLS[storeId];
-
-  if (!template) {
-    return `https://www.google.com/search?q=${query}+${encodeURIComponent(storeName)}`;
+  if (storeId && STORE_SEARCH_URLS[storeId]) {
+    return STORE_SEARCH_URLS[storeId](query);
   }
 
-  return template.replace("{query}", query);
+  return `https://www.google.com/search?q=${encodeURIComponent(`${storeName} ${query}`)}`;
 }
  function createRouteUrl(originAddress, destinationAddress) {
   return (
