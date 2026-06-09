@@ -665,9 +665,11 @@ const STORE_SEARCH_URLS = {
   hornbach: query =>
     `https://www.hornbach.de/s/${encodeURIComponent(query)}`,
 
- toom: query =>
-  `https://toom.de/suche/?q=${encodeURIComponent(query)}`,
-
+toom: query =>
+  `https://www.google.com/search?q=${encodeURIComponent(
+    `${query} site:toom.de -filetype:pdf`
+  )}`,
+  
   hagebau: query =>
     `https://www.google.com/search?q=${encodeURIComponent(
       `site:hagebau.de ${query}`
