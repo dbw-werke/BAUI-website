@@ -656,13 +656,51 @@
       return `<div class="store-logo-fallback">🏬</div>`;
     }
 const STORE_SEARCH_URLS = {
-  obi: "https://www.obi.de/search/{query}/",
-  hornbach: "https://www.hornbach.de/suche/?text={query}",
-  bauhaus: "https://www.bauhaus.info/suche/produkte?text={query}",
-  toom: "https://toom.de/suche/?query={query}",
-  hagebau: "https://www.hagebau.de/suche/?query={query}",
-  baywa: "https://www.baywa-baustoffe.de/suche?query={query}",
-  wuerth: "https://www.wuerth.de/web/de/awkg/suche/suche.php?query={query}"
+  obi: query =>
+    `https://www.obi.de/search/${encodeURIComponent(query)}/`,
+
+  bauhaus: query =>
+    `https://www.bauhaus.info/suche/produkte?text=${encodeURIComponent(query)}`,
+
+  hornbach: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `site:hornbach.de ${query}`
+    )}`,
+
+  toom: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `site:toom.de ${query}`
+    )}`,
+
+  hagebau: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `site:hagebau.de ${query}`
+    )}`,
+
+  baywa: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `site:baywa-baustoffe.de ${query}`
+    )}`,
+
+  wuerth: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `site:wuerth.de ${query}`
+    )}`,
+
+  raabkarcher: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `site:raabkarcher.de ${query}`
+    )}`,
+
+  spaeth: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `Späth Baustoffe ${query}`
+    )}`,
+
+  spaethknoll: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(
+      `Späth-Knoll ${query}`
+    )}`
 };
 
 function getStoreIdFromName(storeName) {
