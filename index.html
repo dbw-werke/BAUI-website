@@ -665,42 +665,27 @@ const STORE_SEARCH_URLS = {
   hornbach: query =>
     `https://www.hornbach.de/s/${encodeURIComponent(query)}`,
 
-toom: query =>
-  `https://www.google.com/search?q=${encodeURIComponent(
-    `${query} toom baumarkt`
-  )}`,
-  
+  toom: query =>
+    `https://www.google.com/search?q=${encodeURIComponent(`${query} toom Baumarkt kaufen`)}`,
+
   hagebau: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `site:hagebau.de ${query}`
-    )}`,
+    `https://www.google.com/search?q=${encodeURIComponent(`${query} hagebau kaufen`)}`,
 
   baywa: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `site:baywa-baustoffe.de ${query}`
-    )}`,
+    `https://www.google.com/search?q=${encodeURIComponent(`${query} BayWa Baustoffe kaufen`)}`,
 
   wuerth: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `site:wuerth.de ${query}`
-    )}`,
+    `https://www.google.com/search?q=${encodeURIComponent(`${query} Würth kaufen`)}`,
 
   raabkarcher: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `site:raabkarcher.de ${query}`
-    )}`,
+    `https://www.google.com/search?q=${encodeURIComponent(`${query} Raab Karcher kaufen`)}`,
 
   spaeth: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `Späth Baustoffe ${query}`
-    )}`,
+    `https://www.google.com/search?q=${encodeURIComponent(`${query} Späth Baustoffe kaufen`)}`,
 
   spaethknoll: query =>
-    `https://www.google.com/search?q=${encodeURIComponent(
-      `Späth-Knoll ${query}`
-    )}`
+    `https://www.google.com/search?q=${encodeURIComponent(`${query} Späth-Knoll kaufen`)}`
 };
-
 
 function getStoreIdFromName(storeName) {
   const name = String(storeName || "").toLowerCase();
