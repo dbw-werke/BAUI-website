@@ -666,7 +666,9 @@ const STORE_SEARCH_URLS = {
     `https://www.hornbach.de/s/${encodeURIComponent(query)}`,
 
 toom: query =>
-  `https://toom.de/suche/?search=${encodeURIComponent(query)}`,
+  `https://www.google.com/search?q=${encodeURIComponent(
+    `${query} toom baumarkt`
+  )}`,
   
   hagebau: query =>
     `https://www.google.com/search?q=${encodeURIComponent(
