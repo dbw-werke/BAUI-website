@@ -692,9 +692,67 @@ function createStoreSearchUrl(storeName, productInput) {
   if (storeId && STORE_SEARCH_URLS[storeId]) {
     return STORE_SEARCH_URLS[storeId](query);
   }
+  
+function findMaterialByInput(input) {
+  const query = String(input || "")
+    .toLowerCase()
+    .trim()
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss");
 
-  return `https://www.google.com/search?q=${encodeURIComponent(`${storeName} ${query}`)}`;
+  if (!query || typeof MATERIALS_DB === "undefined") return null;
+
+  return MATERIALS_DB.find(material => {
+    const name = String(material.name || "")
+      .toLowerCase()
+      .replace(/ä/g, "ae")
+      .replace(/ö/g, "oe")
+      .replace(/ü/g, "ue")
+      .replace(/ß/g, "ss");
+
+    const nameMatch =
+      name.includes(query) ||
+      query.includes(name);
+
+    const aliasMatch = Array.isArray(material.aliases)
+      ? material.aliases.some(alias => {
+          const normalizedAlias = String(alias || "")
+            .toLowerCase()
+            .replace(/ä/g, "ae")
+            .replace(/ö/g, "oe")
+            .replace(/ü/g, "ue")
+            .replace(/ß/g, "ss");
+
+          return (
+            normalizedAlias.includes(query) ||
+            query.includes(normalizedAlias)
+          );
+        })
+      : false;
+
+    return nameMatch || aliasMatch;
+  });
 }
+
+function createFinalStoreUrl(storeName, productInput) {
+  const storeId = getStoreIdFromName(storeName);
+  const material = findMaterialByInput(productInput);
+
+  if (
+    storeId &&
+    material &&
+    typeof STORE_PRODUCT_LINKS !== "undefined" &&
+    STORE_PRODUCT_LINKS[storeId] &&
+    STORE_PRODUCT_LINKS[storeId][material.material_id]
+  ) {
+    return STORE_PRODUCT_LINKS[storeId][material.material_id];
+  }
+
+  return createStoreSearchUrl(storeName, productInput);
+}
+  
  function createRouteUrl(originAddress, destinationAddress) {
   return (
     "https://www.google.com/maps/dir/?api=1" +
@@ -719,11 +777,11 @@ function toggleStoreActionPanel(card, place, product, location, kmText, minuteTe
   const panel = document.createElement("div");
   panel.className = "store-action-panel";
 
-  const storeUrl = createStoreSearchUrl(
-    place.name || "",
-    product || ""
-  );
-
+const storeUrl = createFinalStoreUrl(
+  place.name || "",
+  product || ""
+);
+  
   const routeUrl = createRouteUrl(
     location,
     place.vicinity || place.name || ""
@@ -969,6 +1027,7 @@ resultsEl.appendChild(div);
       cards.sort((a, b) => {
         return getPriceFromCard(a) - getPriceFromCard(b);
       });
+    
 
       container.innerHTML = "";
       cards.forEach(card => container.appendChild(card));
@@ -984,7 +1043,8 @@ resultsEl.appendChild(div);
   </script>
 
   <script src="materials-database.js"></script>
-  <script src="generate-prices.js"></script>
-  <script src="product-compare.js"></script>
+<script src="store-product-links.js"></script>
+<script src="generate-prices.js"></script>
+<script src="product-compare.js"></script>
 </body>
 </html>
