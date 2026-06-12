@@ -288,32 +288,6 @@
       color: #ffffff;
       transform: translateY(-1px);
     }
-.suggestions-box {
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.suggestions-box.active {
-  display: flex;
-}
-
-.suggestion-item {
-  background: #2b2b2b;
-  color: #ffffff;
-  border: 1px solid #5a5a5a;
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.15s;
-}
-
-.suggestion-item:hover {
-  background: #e53935;
-}
     .input-with-suggestions {
   position: relative;
 }
@@ -688,7 +662,14 @@ const STORE_SEARCH_URLS = {
 };
 
 function getStoreIdFromName(storeName) {
-  const name = String(storeName || "").toLowerCase();
+  const name = String(storeName || "")
+    .toLowerCase()
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/\s+/g, "")
+    .replace(/-/g, "");
 
   if (name.includes("obi")) return "obi";
   if (name.includes("hornbach")) return "hornbach";
@@ -696,7 +677,10 @@ function getStoreIdFromName(storeName) {
   if (name.includes("toom")) return "toom";
   if (name.includes("hagebau")) return "hagebau";
   if (name.includes("baywa")) return "baywa";
-  if (name.includes("würth") || name.includes("wuerth")) return "wuerth";
+  if (name.includes("wuerth") || name.includes("wurth")) return "wuerth";
+  if (name.includes("raab")) return "raabkarcher";
+  if (name.includes("spaethknoll")) return "spaethknoll";
+  if (name.includes("spaeth")) return "spaeth";
 
   return null;
 }
