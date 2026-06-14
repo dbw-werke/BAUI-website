@@ -652,7 +652,7 @@ const STORE_SEARCH_URLS = {
     `https://www.google.com/search?q=${encodeURIComponent(`${query} Würth kaufen`)}`,
 
 raabkarcher: query =>
-  `https://www.raabkarcher.de/search?text=${encodeURIComponent(query)}`,
+  `https://www.raabkarcher.de/search?userInput=${encodeURIComponent(query)}&pageNo=0&text=${encodeURIComponent(query)}`,
 
   spaeth: query =>
     `https://www.google.com/search?q=${encodeURIComponent(`${query} Späth Baustoffe kaufen`)}`,
